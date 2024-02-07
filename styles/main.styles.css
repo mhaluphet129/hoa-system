@@ -1,0 +1,29 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6rem;
+  min-height: 100vh;
+}
+
+.remove-padding-modal .ant-modal-content {
+  padding: 5px;
+}
+
+@page {
+  size: legal;
+  margin: 0.5in;
+}
+
+@media print {
+  html,
+  body {
+    width: 215.9mm !important;
+    height: 355.6mm !important;
+    overflow: initial !important;
+    padding-right: 5%;
+    padding-left: 2.5%;
+    padding-top: 2.5%;
+  }
+}
