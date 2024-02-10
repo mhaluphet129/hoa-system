@@ -1,4 +1,5 @@
 import type { AppProps } from "next/app";
+import "reflect-metadata";
 
 import "@/styles/globals.css";
 import "@/styles//main.styles.css";
@@ -11,8 +12,8 @@ export default function App({ Component, pageProps }: AppProps) {
       <Head>
         <link rel="shortcut icon" href="/favicon.png" />
         <title>
-          Accredited Boarding House Management and Student Monitoring System for
-          University Student Services
+          VVVHOA Portal: A Web-Based Application for Vista Verde Village
+          Homeowners Association Online Portal
         </title>
         <meta
           name="description"
