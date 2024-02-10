@@ -1,6 +1,7 @@
 interface Response {
   status: number;
-  message?: string;
+  data?: Record<any, any>;
+  error?: any;
   requestTime?: Date;
 }
 

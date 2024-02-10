@@ -7,7 +7,6 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import Cookies from "js-cookie";
-import authenticate from "@/assets/js/auth_middleware";
 
 const JWT_PRIVATE_KEY = process.env.JWT_PRIVATE_KEY ?? "";
 
@@ -23,30 +22,32 @@ async function handler(req: NextApiRequest, res: NextApiResponse<LoginProps>) {
     const validUser = await User.findOne({ username }).lean();
     const validPassword = await bcrypt.compare(password, validUser.password);
 
-    if (validPassword) {
-      delete validUser.password;
-      delete validUser.createdAt;
-      delete validUser.updatedAt;
-      delete validUser.__v;
+    if (validUser) {
+      if (validPassword) {
+        delete validUser.password;
+        delete validUser.createdAt;
+        delete validUser.updatedAt;
+        delete validUser.__v;
 
-      const token = jwt.sign(validUser, JWT_PRIVATE_KEY);
+        const token = jwt.sign(validUser, JWT_PRIVATE_KEY);
 
-      Cookies.set("loggedIn", "true");
+        Cookies.set("loggedIn", "true");
 
-      res.json({
-        token: token,
-        status: 200,
-        message: "Login Success",
-        ...validUser,
-      });
-    } else
-      res.json({
-        status: 404,
-        message: "Invalid Password",
-      });
+        res.json({
+          token: token,
+          status: 200,
+          message: "Login Success",
+          ...validUser,
+        });
+      } else
+        res.json({
+          status: 404,
+          message: "Invalid Password",
+        });
+    } else res.json({ status: 404, message: "User doesn't exist" });
   } else {
     res.json({ status: 405, message: "Incorrect Request Method" });
   }
 }
 
-export default authenticate(handler);
+export default handler;

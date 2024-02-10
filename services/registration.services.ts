@@ -1,23 +1,42 @@
-import { AxiosInstance } from "axios";
-import AxiosService from "./axios.service";
-import { HomeOwnerRegistrationDTO } from "../assets/dto";
+import ApiService, { Success } from "./api.service";
+
+import { HomeOwnerRegistrationDTO } from "@/assets/dto";
+import { Response } from "@/types";
+import { setItemWithExpiry } from "@/assets/js";
+
 import { validate } from "class-validator";
 
 export default class RegistrationService {
-  protected readonly axiosClient: AxiosInstance;
+  private readonly instance = new ApiService();
 
-  public constructor() {
-    this.axiosClient = new AxiosService().instance;
-  }
-
-  public async newHomeOwner(user: HomeOwnerRegistrationDTO): Promise<any> {
+  public async newHomeOwner(user: HomeOwnerRegistrationDTO): Promise<Response> {
     const errors = await validate(user);
+
     if (errors.length > 0) {
-      console.log(
-        `Validation failed: ${errors
-          .map((error: any) => Object.values(error.constraints))
-          .join(", ")}`
-      );
+      return {
+        status: 500,
+        error: errors.map((err: any) => Object.values(err.constraints)),
+      };
+    }
+
+    const response = await this.instance.post({
+      endpoint: "/homeowner/register",
+      payload: user,
+    });
+
+    if (response instanceof Success) {
+      setItemWithExpiry("token", response.response.token, 3600);
+      return {
+        status: 200,
+        data: response.response,
+      };
+    } else {
+      return {
+        status: response.code,
+        data: {
+          message: response.response?.message ?? "Error in the Server",
+        },
+      };
     }
   }
 }
