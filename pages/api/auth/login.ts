@@ -1,59 +1,52 @@
 import dbConnect from "@/database/dbConnect";
 import User from "@/database/models/user.schema";
 import { LoginDTO } from "@/assets/dto";
-import { Response } from "@/assets/types";
+import { Response } from "@/types";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { buildMapper } from "dto-mapper";
+import Cookies from "js-cookie";
+import authenticate from "@/assets/js/auth_middleware";
 
 const JWT_PRIVATE_KEY = process.env.JWT_PRIVATE_KEY ?? "";
 
 type LoginProps = Response & Partial<LoginDTO>;
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<LoginProps>
-) {
+async function handler(req: NextApiRequest, res: NextApiResponse<LoginProps>) {
   await dbConnect();
 
   const { method } = req;
-  const { username, password, loginMode } = req.body;
+  const { username, password } = req.body;
 
   if (method === "POST") {
-    const validUser = await User.findOne({ username, type: loginMode }).lean();
+    const validUser = await User.findOne({ username }).lean();
+    const validPassword = await bcrypt.compare(password, validUser.password);
 
-    if (validUser) {
-      const validPassword = await bcrypt.compare(password, validUser.password);
+    if (validPassword) {
+      delete validUser.password;
+      delete validUser.createdAt;
+      delete validUser.updatedAt;
+      delete validUser.__v;
 
-      if (validPassword) {
-        const token = jwt.sign(validUser, JWT_PRIVATE_KEY);
-        const mapper = buildMapper(LoginDTO);
+      const token = jwt.sign(validUser, JWT_PRIVATE_KEY);
 
-        // TODO: fetch specified data by loginMode
+      Cookies.set("loggedIn", "true");
 
-        const user = mapper.serialize(validUser, loginMode);
-        user.token = token;
-
-        res.json({
-          status: 200,
-          message: "Login Success",
-          ...user,
-        });
-      } else {
-        res.json({
-          status: 400,
-          message: "Password is incorrect.",
-        });
-      }
-    } else {
       res.json({
-        message: "Account doesn't exist",
-        status: 404,
+        token: token,
+        status: 200,
+        message: "Login Success",
+        ...validUser,
       });
-    }
+    } else
+      res.json({
+        status: 404,
+        message: "Invalid Password",
+      });
   } else {
     res.json({ status: 405, message: "Incorrect Request Method" });
   }
 }
+
+export default authenticate(handler);

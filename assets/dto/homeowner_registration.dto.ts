@@ -7,7 +7,7 @@ import {
   IsEnum,
   IsNumber,
 } from "class-validator";
-import type { HomeOwnerType } from "../types";
+import type { HomeOwnerType } from "../../types";
 
 export class HomeOwnerRegistrationDTO {
   @IsString()

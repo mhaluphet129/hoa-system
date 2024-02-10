@@ -2,7 +2,7 @@ import dbConnect from "@/database/dbConnect";
 import User from "@/database/models/user.schema";
 import UserStaff from "@/database/models/user_staff.schema";
 import { LoginDTO } from "@/assets/dto";
-import { Response } from "@/assets/types";
+import { Response } from "@/types";
 import { mapResponseToDTO } from "@/assets/js";
 
 import bcrypt from "bcryptjs";

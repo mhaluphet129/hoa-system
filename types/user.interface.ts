@@ -2,13 +2,13 @@ export type UserType = "homeowner" | "staff" | "treasurer" | "bod";
 export type HomeOwnerType = "owner" | "renter";
 
 export interface User {
-  username: string;
-  password: string;
-  type: UserType;
+  username?: string;
+  password?: string;
+  type?: UserType;
   homeownerId?: Homeowner;
-  staffId: Staff;
-  treasurerId: Treasurer;
-  dateCreated: Date;
+  staffId?: Staff;
+  treasurerId?: Treasurer;
+  dateCreated?: Date;
 }
 
 export interface Homeowner {

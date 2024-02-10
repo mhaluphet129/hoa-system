@@ -4,13 +4,13 @@ import HomeOwner from "@/database/models/user_homeowner.schema";
 import { PasswordGenerator as generatorPassword } from "@/assets/js";
 
 import type { NextApiRequest, NextApiResponse } from "next";
+import authenticate from "@/assets/js/auth_middleware";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+// TODO: add duplicate validation here
+// TODO: then email the account credentials via node mailer
+
+async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();
-
   const { method } = req;
 
   if (method === "POST") {
@@ -33,7 +33,7 @@ export default async function handler(
         });
       });
     });
-
-    // TODO: then email the account credentials via node mailer
   } else return res.json({ status: 500, message: "Error in the server." });
 }
+
+export default authenticate(handler);

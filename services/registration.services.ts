@@ -1,6 +1,6 @@
 import { AxiosInstance } from "axios";
 import AxiosService from "./axios.service";
-import { HomeOwnerRegistrationDTO } from "../dto";
+import { HomeOwnerRegistrationDTO } from "../assets/dto";
 import { validate } from "class-validator";
 
 export default class RegistrationService {

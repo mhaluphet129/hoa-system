@@ -1,5 +1,5 @@
 import { dto, include, scope } from "dto-mapper";
-import type { UserType, Homeowner, Staff, Treasurer } from "../types";
+import type { UserType, Homeowner, Staff, Treasurer } from "../../types";
 
 // TODO: need to fix homeowner and other reference variable
 @dto()

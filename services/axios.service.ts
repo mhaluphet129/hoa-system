@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
+import login from "@/pages/api/auth/login";
 import Cookies from "js-cookie";
 
 export default class AxiosService {
