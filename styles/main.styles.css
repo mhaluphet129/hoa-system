@@ -1,3 +1,6 @@
+@import url("https://fonts.googleapis.com/css2?family=Abel&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@600&display=swap");
+
 .main {
   display: flex;
   flex-direction: column;
@@ -9,6 +12,12 @@
 
 .remove-padding-modal .ant-modal-content {
   padding: 5px;
+}
+
+.myCustomForm div div div label {
+  font-size: 12px !important;
+  color: #1c2434;
+  font-family: abel;
 }
 
 @page {
