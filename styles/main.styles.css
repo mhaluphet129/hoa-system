@@ -20,6 +20,10 @@
   font-family: abel;
 }
 
+.underline-on-hover:hover {
+  text-decoration: underline;
+}
+
 @page {
   size: legal;
   margin: 0.5in;

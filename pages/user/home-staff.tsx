@@ -1,13 +1,16 @@
-import React, { useState } from "react";
-import { Layout } from "antd";
+import React, { useEffect, useState } from "react";
+import { Layout, message } from "antd";
 import { Sider, Header, Content, Footer } from "../layout";
-import { MailFilled } from "@ant-design/icons";
 import { LuLayoutDashboard, LuMegaphone } from "react-icons/lu";
 import { FaRegBell } from "react-icons/fa";
 import { PiUsersLight, PiSealWarningLight } from "react-icons/pi";
 import { TbReceipt } from "react-icons/tb";
 import { LuCalendarRange } from "react-icons/lu";
 import { MdCalendarToday } from "react-icons/md";
+
+import Announcement from "@/app/components/staff/announcement";
+import Event from "@/app/components/staff/event";
+import Concern from "@/app/components/staff/concern";
 
 // TODO: Add notif banner count
 
@@ -18,8 +21,16 @@ const selectedItemsStyle = {
   borderLeft: "5px solid #aaa",
 };
 
-const HomeOwner = () => {
+const HomeOwner: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState("dashboard");
+
+  useEffect(() => {
+    message.info({
+      content: "Welcome Staff-01",
+      icon: null,
+    });
+  }, []);
+
   return (
     <>
       <Layout>
@@ -120,13 +131,9 @@ const HomeOwner = () => {
         <Layout>
           <Header />
           <Content selectedKey={selectedKey}>
-            {/* {selectedKey == "accommodations" ? (
-              <Establishments app_key={app_key} />
-            ) : null}
-            {selectedKey == "student" ? <Student app_key={app_key} /> : null}
-            {selectedKey == "home" ? (
-              <Home setSelectedKey={setSelectedKey} />
-            ) : null} */}
+            {selectedKey == "announcement" ? <Announcement /> : null}
+            {selectedKey == "event" ? <Event /> : null}
+            {selectedKey == "concern" ? <Concern /> : null}
           </Content>
         </Layout>
       </Layout>

@@ -1,2 +1,2 @@
 export * from "./password_generator";
-export * from "./localstorage_utilities";
+export * from "./jwt_jose";

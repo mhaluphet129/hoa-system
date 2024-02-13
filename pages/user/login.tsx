@@ -1,13 +1,34 @@
 import React, { useState } from "react";
-import { Form, Input, Button, Card } from "antd";
+import { Form, Input, Button, Card, Alert } from "antd";
 import {
   MailOutlined,
   EyeOutlined,
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
+import Cookies from "js-cookie";
 
-const Login = () => {
+import AuthService from "@/services/auth.service";
+
+const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState({ isError: false, errorMessage: "" });
+  const [form] = Form.useForm();
+
+  const auth = new AuthService();
+
+  const login = async (val: any) => {
+    let res = await auth.login(val);
+    if (!res.success) {
+      console.log(error);
+      setError({
+        isError: true,
+        errorMessage: res.data?.message ?? "Error in the server.",
+      });
+    } else {
+      Cookies.set("token", res.data?.token);
+      window.location.reload();
+    }
+  };
 
   return (
     <div
@@ -21,7 +42,7 @@ const Login = () => {
       <Card
         style={{
           width: "60vw",
-          height: "50vh",
+          minHeight: "50vh",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
@@ -33,10 +54,22 @@ const Login = () => {
         >
           Sign In to Vista Verde Village
         </span>
+        {error.isError && (
+          <Alert
+            type="warning"
+            message={error.errorMessage}
+            closable
+            afterClose={() => setError({ isError: false, errorMessage: "" })}
+            showIcon
+          />
+        )}
+
         <Form
           layout="vertical"
-          style={{ marginTop: 35 }}
+          style={{ marginTop: 20 }}
           className="myCustomForm"
+          form={form}
+          onFinish={login}
         >
           <Form.Item
             label="Email/Username"
@@ -87,6 +120,7 @@ const Login = () => {
                 color: "#fff",
               }}
               size="large"
+              htmlType="submit"
               block
             >
               Sign In

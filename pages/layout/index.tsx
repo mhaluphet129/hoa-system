@@ -4,7 +4,7 @@ import { SiderProps, ContentProps } from "@/types";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import Cookies from "js-cookie";
 
-// import { PageHeader } from "@ant-design/pro-layout";
+import { PageHeader } from "@ant-design/pro-layout";
 
 const Sider = ({ selectedIndex, selectedKey, items }: SiderProps) => {
   return (
@@ -99,7 +99,7 @@ const Header = () => {
                   ),
                   key: "3",
                   onClick: () => {
-                    Cookies.remove("loggedIn");
+                    Cookies.remove("token");
                     window.location.reload();
                   },
                 },
@@ -129,9 +129,15 @@ const Content = ({ selectedKey, children }: ContentProps) => {
         overflow: "scroll",
       }}
     >
-      {/* <PageHeader title={selectedKey.toString().toUpperCase()}>
+      <PageHeader
+        title={
+          <span style={{ fontFamily: "Abel" }}>
+            {selectedKey.toString().toUpperCase()}
+          </span>
+        }
+      >
         {children}
-      </PageHeader> */}
+      </PageHeader>
     </div>
   );
 };

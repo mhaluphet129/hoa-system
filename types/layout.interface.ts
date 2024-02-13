@@ -1,4 +1,5 @@
 import type { MenuProps } from "antd";
+import { ReactNode } from "react";
 
 export interface SiderProps {
   selectedIndex: MenuProps["onClick"];
@@ -8,5 +9,5 @@ export interface SiderProps {
 
 export interface ContentProps {
   selectedKey: string;
-  children?: React.FC[];
+  children?: ReactNode;
 }

@@ -2,11 +2,10 @@ import dbConnect from "@/database/dbConnect";
 import User from "@/database/models/user.schema";
 import { LoginDTO } from "@/assets/dto";
 import { Response } from "@/types";
+import { sign } from "@/assets/js";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import Cookies from "js-cookie";
 
 const JWT_PRIVATE_KEY = process.env.JWT_PRIVATE_KEY ?? "";
 
@@ -19,34 +18,53 @@ async function handler(req: NextApiRequest, res: NextApiResponse<LoginProps>) {
   const { username, password } = req.body;
 
   if (method === "POST") {
-    const validUser = await User.findOne({ username }).lean();
-    const validPassword = await bcrypt.compare(password, validUser.password);
+    const validUser = await User.findOne({
+      $or: [{ username, email: username }],
+    }).lean();
 
     if (validUser) {
+      const validPassword = await bcrypt.compare(password, validUser.password);
       if (validPassword) {
         delete validUser.password;
         delete validUser.createdAt;
         delete validUser.updatedAt;
         delete validUser.__v;
 
-        const token = jwt.sign(validUser, JWT_PRIVATE_KEY);
-
-        Cookies.set("loggedIn", "true");
+        const token = await sign(validUser, JWT_PRIVATE_KEY);
 
         res.json({
-          token: token,
-          status: 200,
-          message: "Login Success",
-          ...validUser,
+          code: 200,
+          success: true,
+          data: {
+            message: "Login Success",
+            user: validUser,
+            token: token,
+          },
         });
       } else
         res.json({
-          status: 404,
-          message: "Invalid Password",
+          code: 404,
+          success: false,
+          data: {
+            message: "Invalid Password",
+          },
         });
-    } else res.json({ status: 404, message: "User doesn't exist" });
+    } else
+      res.json({
+        code: 404,
+        success: false,
+        data: {
+          message: "User doesn't exist",
+        },
+      });
   } else {
-    res.json({ status: 405, message: "Incorrect Request Method" });
+    res.json({
+      code: 405,
+      success: false,
+      data: {
+        message: "Incorrect Request Method",
+      },
+    });
   }
 }
 

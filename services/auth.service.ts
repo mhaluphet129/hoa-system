@@ -1,7 +1,6 @@
 import ApiService, { Success } from "./api.service";
 import { LoginDTO } from "@/assets/dto";
 import { validate } from "class-validator";
-import { setItemWithExpiry } from "@/assets/js";
 import { Response } from "@/types";
 
 export default class AuthService {
@@ -12,7 +11,7 @@ export default class AuthService {
 
     if (errors.length > 0) {
       return {
-        status: 500,
+        code: 500,
         error: errors.map((err: any) => Object.values(err.constraints)),
       };
     }
@@ -20,19 +19,24 @@ export default class AuthService {
     const response = await this.instance.post({
       endpoint: "/auth/login",
       payload: credentials,
+      publicRoute: true,
     });
 
     if (response instanceof Success) {
-      setItemWithExpiry("token", response.response.token, 3600);
       return {
-        status: 200,
-        data: response.response,
+        code: response.code,
+        success: true,
+        data: {
+          message: response.response.data.message,
+          token: response.response.data.token,
+        },
       };
     } else {
       return {
-        status: response.code,
+        code: response.code,
+        success: false,
         data: {
-          message: response.response?.message ?? "Error in the Server",
+          message: response.response.data.message,
         },
       };
     }
