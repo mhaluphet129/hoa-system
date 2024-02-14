@@ -11,6 +11,10 @@ const nextConfig = {
 
     return config;
   },
+  env: {
+    JWT_PRIVATE_KEY: process.env.JWT_PRIVATE_KEY,
+    DB_URL: process.env.DB_URL,
+  },
 };
 
 export default nextConfig;

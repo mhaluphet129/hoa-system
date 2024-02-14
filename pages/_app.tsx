@@ -8,7 +8,13 @@ import Head from "next/head";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ConfigProvider>
+    <ConfigProvider
+      theme={{
+        token: {
+          fontFamily: "abel",
+        },
+      }}
+    >
       <Head>
         <link rel="shortcut icon" href="/favicon.png" />
         <title>

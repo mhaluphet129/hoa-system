@@ -14,8 +14,10 @@ export async function middleware(req: NextRequest) {
   if (token) {
     try {
       currentUser = await verify(token, JWT_SECRET);
-    } catch {
-      return NextResponse.redirect(new URL("/user/login", req.url));
+    } catch (e) {
+      const res = NextResponse.next();
+      res.cookies.clear();
+      return res;
     }
   }
 

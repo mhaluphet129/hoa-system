@@ -1,6 +1,6 @@
 import axios from "axios";
-import Cookies from "js-cookie";
 import { verify } from "@/assets/js";
+import { useAuthStore } from "./context";
 
 class API {
   public async get({
@@ -12,12 +12,11 @@ class API {
     query?: Record<any, any>;
     publicRoute?: boolean;
   }) {
-    let token;
+    const { accessToken: token } = useAuthStore.getState();
 
     if (!publicRoute) {
       try {
-        token = Cookies.get("token") ?? "";
-        const flag = await verify(token, process.env.JWT_PRIVATE_KEY!);
+        const flag = await verify(token!, process.env.JWT_PRIVATE_KEY!);
         if (!token && !flag && !publicRoute) throw new Error("No bearer");
       } catch {
         return new Fail({
@@ -53,14 +52,14 @@ class API {
     payload?: Record<any, any>;
     publicRoute?: boolean;
   }) {
-    let token;
-
+    const { accessToken: token } = useAuthStore.getState();
     if (!publicRoute) {
       try {
-        token = Cookies.get("token") ?? "";
-        const flag = await verify(token, process.env.JWT_PRIVATE_KEY!);
-        if (!token && !flag) throw new Error("No bearer");
-      } catch {
+        const flag = await verify(token!, process.env.JWT_PRIVATE_KEY!);
+        if (!token || !flag) throw new Error("No bearer");
+      } catch (e) {
+        console.log(e);
+
         return new Fail({
           code: 401,
           response: { message: "Incorrect/No Bearer token" },

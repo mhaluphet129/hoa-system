@@ -68,7 +68,7 @@ const StaffEvent: React.FC = () => {
             />
           ))}
       </Space>
-      <Pagination defaultCurrent={6} total={500} />
+      <Pagination defaultCurrent={1} total={500} />
     </div>
   );
 };

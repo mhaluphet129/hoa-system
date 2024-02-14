@@ -1,2 +1,3 @@
-export * from "./login.dto";
-export * from "./homeowner_registration.dto";
+export * from "./auth.dto";
+export * from "./homeowner.dto";
+export * from "./staff.dto";

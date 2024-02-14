@@ -1,6 +1,5 @@
 import dbConnect from "@/database/dbConnect";
 import User from "@/database/models/user.schema";
-import { LoginDTO } from "@/assets/dto";
 import { Response } from "@/types";
 import { sign } from "@/assets/js";
 
@@ -9,9 +8,7 @@ import bcrypt from "bcryptjs";
 
 const JWT_PRIVATE_KEY = process.env.JWT_PRIVATE_KEY ?? "";
 
-type LoginProps = Response & Partial<LoginDTO>;
-
-async function handler(req: NextApiRequest, res: NextApiResponse<LoginProps>) {
+async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
   await dbConnect();
 
   const { method } = req;

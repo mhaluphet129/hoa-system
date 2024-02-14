@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Input, Button, Card, Alert } from "antd";
+import { Form, Input, Button, Card, Alert, message } from "antd";
 import {
   MailOutlined,
   EyeOutlined,
@@ -8,25 +8,36 @@ import {
 import Cookies from "js-cookie";
 
 import AuthService from "@/services/auth.service";
+import { verify } from "@/assets/js";
+import { useUserStore, useAuthStore } from "@/services/context";
 
-const Login: React.FC = () => {
+const Login = ({ private_key }: { private_key: string }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState({ isError: false, errorMessage: "" });
   const [form] = Form.useForm();
-
   const auth = new AuthService();
+
+  const { setUser } = useUserStore();
+  const { setAccessToken } = useAuthStore();
 
   const login = async (val: any) => {
     let res = await auth.login(val);
     if (!res.success) {
-      console.log(error);
       setError({
         isError: true,
         errorMessage: res.data?.message ?? "Error in the server.",
       });
     } else {
-      Cookies.set("token", res.data?.token);
-      window.location.reload();
+      try {
+        let currentUser = await verify(res?.data?.token, private_key);
+        setAccessToken(res.data?.token);
+        setUser(currentUser);
+        Cookies.set("token", res.data?.token);
+        window.location.reload();
+      } catch (e) {
+        console.log(e);
+        message.error("Error in the login");
+      }
     }
   };
 
@@ -140,6 +151,12 @@ const Login: React.FC = () => {
       </Card>
     </div>
   );
+};
+
+Login.getInitialProps = () => {
+  return {
+    private_key: process.env.JWT_PRIVATE_KEY,
+  };
 };
 
 export default Login;

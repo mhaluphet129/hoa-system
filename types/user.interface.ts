@@ -2,6 +2,7 @@ export type UserType = "homeowner" | "staff" | "treasurer" | "bod";
 export type HomeOwnerType = "owner" | "renter";
 
 export interface User {
+  _id: string;
   username?: string;
   password?: string;
   type?: UserType;

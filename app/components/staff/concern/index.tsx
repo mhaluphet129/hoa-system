@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import { Space, Select, Table, Tag } from "antd";
-import jason from "@/assets/json/constants.json";
 import dayjs from "dayjs";
+
+import jason from "@/assets/json/constants.json";
+
+import ConcernDetailsCard from "./components/concern_details_card";
 
 const StaffConcern = () => {
   const [filter, setFilter] = useState({
@@ -75,6 +78,8 @@ const StaffConcern = () => {
         </Space>
       </div>
       <Table columns={columns} />
+      {/* context */}
+      <ConcernDetailsCard open={false} close={() => {}} />
     </>
   );
 };

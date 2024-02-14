@@ -1,18 +1,25 @@
-import React, { useState } from "react";
-import { Select, Button, Table, Space } from "antd";
+import React, { useState, useContext } from "react";
+import { Select, Button, Table, Space, message } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
 import jason from "@/assets/json/constants.json";
+import { AnnouncementProps } from "@/types";
+import StaffService from "@/services/staff.service";
+import { useUserStore } from "@/services/context/user.context";
 
 import StaffNewAnnouncement from "./components/new_announcement";
 
 const StaffAnnouncement: React.FC = () => {
   const [openNewAnnouncement, setOpenNewAnnouncement] = useState(false);
+  const [loader, setLoader] = useState<string[]>([]);
   const [filter, setFilter] = useState({
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
   });
+
+  const { currentUser } = useUserStore();
+  const staff = new StaffService();
 
   const columns = [
     {
@@ -38,6 +45,22 @@ const StaffAnnouncement: React.FC = () => {
       ),
     },
   ];
+
+  const newAnnouncement = async (props: AnnouncementProps) => {
+    setLoader([...loader, "new-announce"]);
+    let res = await staff.newAnnouncement({
+      ...props,
+      staffId: currentUser!._id,
+    });
+
+    if (res.success ?? false) {
+      setLoader(loader.filter((e) => e != "new-announce"));
+      message.success("New Announce added Successfully");
+      setOpenNewAnnouncement(false);
+    } else {
+      setLoader(loader.filter((e) => e != "new-announce"));
+    }
+  };
 
   return (
     <>
@@ -93,8 +116,9 @@ const StaffAnnouncement: React.FC = () => {
       {/* context */}
       <StaffNewAnnouncement
         open={openNewAnnouncement}
-        onSave={({ title, description, image }) => {}}
+        onSave={newAnnouncement}
         close={() => setOpenNewAnnouncement(false)}
+        isLoading={loader.includes("new-announce")}
       />
     </>
   );
