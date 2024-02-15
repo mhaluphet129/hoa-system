@@ -21,7 +21,7 @@ const selectedItemsStyle = {
   borderLeft: "5px solid #aaa",
 };
 
-const HomeOwner: React.FC = () => {
+const Staff: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState("dashboard");
 
   useEffect(() => {
@@ -142,4 +142,4 @@ const HomeOwner: React.FC = () => {
   );
 };
 
-export default HomeOwner;
+export default Staff;

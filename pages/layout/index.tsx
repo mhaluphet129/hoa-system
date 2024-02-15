@@ -1,10 +1,13 @@
 import React from "react";
 import { Layout, Menu, Typography, Affix, Dropdown, Avatar } from "antd";
-import { SiderProps, ContentProps } from "@/types";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import Cookies from "js-cookie";
-
 import { PageHeader } from "@ant-design/pro-layout";
+
+import { SiderProps, ContentProps } from "@/types";
+import { useAuthStore } from "@/services/context";
+import { verify } from "@/assets/js";
+import { GetServerSideProps } from "next";
 
 const Sider = ({ selectedIndex, selectedKey, items }: SiderProps) => {
   return (
@@ -155,6 +158,32 @@ const Footer = () => {
       <Typography.Title level={5} style={{ marginTop: 10 }}></Typography.Title>
     </Layout.Footer>
   );
+};
+
+export default function MyLayout() {
+  return <></>;
+}
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { accessToken } = useAuthStore();
+
+  try {
+    if (accessToken) {
+      await verify(accessToken, process.env.JWT_PRIVATE_KEY!);
+      return { props: {} };
+    } else {
+      throw new Error("No bearer token");
+    }
+  } catch (e) {
+    console.log(e);
+    return {
+      redirect: {
+        permanent: false,
+        destination: "/user/login",
+      },
+      props: {},
+    };
+  }
 };
 
 export { Sider, Header, Content, Footer };

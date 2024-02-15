@@ -2,7 +2,7 @@ import ApiService, { Success } from "./api.service";
 
 import { HomeOwnerRegistrationDTO } from "@/assets/dto";
 import { Response } from "@/types";
-import { setItemWithExpiry } from "@/assets/js";
+import { useUserStore, useAuthStore } from "@/services/context";
 
 import { validate } from "class-validator";
 
@@ -14,10 +14,13 @@ export default class RegistrationService {
 
     if (errors.length > 0) {
       return {
-        status: 500,
+        code: 500,
         error: errors.map((err: any) => Object.values(err.constraints)),
       };
     }
+
+    const { setUser } = useUserStore();
+    const { setAccessToken } = useAuthStore();
 
     const response = await this.instance.post({
       endpoint: "/homeowner/register",
@@ -25,14 +28,15 @@ export default class RegistrationService {
     });
 
     if (response instanceof Success) {
-      setItemWithExpiry("token", response.response.token, 3600);
+      setAccessToken(response.response.token);
+      setUser(user);
       return {
-        status: 200,
+        code: 200,
         data: response.response,
       };
     } else {
       return {
-        status: response.code,
+        code: response.code,
         data: {
           message: response.response?.message ?? "Error in the Server",
         },
