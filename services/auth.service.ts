@@ -3,7 +3,7 @@ import { LoginDTO } from "@/assets/dto";
 import { validate } from "class-validator";
 import { Response } from "@/types";
 
-export default class AuthService {
+export class AuthService {
   private readonly instance = new ApiService();
 
   public async login(credentials: LoginDTO): Promise<Response> {

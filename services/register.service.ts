@@ -6,7 +6,7 @@ import { useUserStore, useAuthStore } from "@/services/context";
 
 import { validate } from "class-validator";
 
-export default class RegistrationService {
+export class RegistrationService {
   private readonly instance = new ApiService();
 
   public async newHomeOwner(user: HomeOwnerRegistrationDTO): Promise<Response> {

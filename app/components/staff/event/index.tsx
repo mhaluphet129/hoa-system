@@ -1,13 +1,53 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Space, Select, Pagination } from "antd";
+
+import { EventService } from "@/services";
+import { EventCardProps, PaginationProps } from "@/types";
+
 import jason from "@/assets/json/constants.json";
 import EventCard from "./components/event_card";
+import EventCardShimmer from "@/app/shimmers/event_card";
 
 const StaffEvent: React.FC = () => {
+  const [fetching, setFetching] = useState(false);
+  const [announcement, setAnnounncement] = useState<EventCardProps[]>([]);
   const [filter, setFilter] = useState({
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
   });
+  const [paginationConfig, setPaginationConfig] = useState<PaginationProps>({
+    page: 1,
+    pageSize: 10,
+    total: 0,
+  });
+
+  const event = new EventService();
+
+  useEffect(() => {
+    setFetching(true);
+
+    (async (_) => {
+      let res = await _.getEvent(paginationConfig);
+
+      if (res.success) {
+        if (res.data?.events ?? false) {
+          setAnnounncement(
+            res.data?.events.map((e: any) => {
+              return {
+                image: e.images[0],
+                title: e.title,
+                description: e.description,
+                id: e._id,
+              };
+            })
+          );
+
+          setPaginationConfig({ ...paginationConfig, total: res.data?.total });
+          setFetching(false);
+        }
+      } else setFetching(false);
+    })(event);
+  }, [paginationConfig]);
 
   return (
     <div
@@ -55,20 +95,31 @@ const StaffEvent: React.FC = () => {
           marginBottom: 20,
           overflow: "scroll",
           padding: 20,
+          alignSelf: "start",
         }}
       >
-        {Array(5)
-          .fill(0)
-          .map((e, i) => (
-            <EventCard
-              image="https://picsum.photos/240"
-              title="LOREM IPSUM"
-              description="Lorem ipsum dolor sit amet, consectetur"
-              id={i.toString()}
-            />
-          ))}
+        {fetching && announcement.length == 0
+          ? Array(5)
+              .fill(0)
+              .map((e, i) => (
+                <EventCardShimmer key={`event-card-shimmer-${i}`} />
+              ))
+          : announcement.map((e, i) => (
+              <EventCard
+                image={e.image}
+                title={e.title}
+                description={e.description}
+                id={e.id}
+                key={`event-card-${i}`}
+              />
+            ))}
       </Space>
-      <Pagination defaultCurrent={1} total={500} />
+      <Pagination
+        defaultCurrent={1}
+        total={paginationConfig.total}
+        pageSize={paginationConfig.pageSize}
+        onChange={(page, pageSize) => setPaginationConfig({ pageSize, page })}
+      />
     </div>
   );
 };

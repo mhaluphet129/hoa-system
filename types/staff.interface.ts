@@ -20,6 +20,12 @@ interface EventCardProps {
   id: string;
 }
 
+interface PaginationProps {
+  pageSize: number;
+  page: number;
+  total?: number;
+}
+
 interface ConcernDetalsCardProps {
   open: boolean;
   close: () => void;
@@ -38,6 +44,7 @@ export type {
   EventCardProps,
   ConcernDetalsCardProps,
   SelectImageProps,
+  PaginationProps,
 };
 
 interface ConcernProps {

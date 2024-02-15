@@ -21,8 +21,6 @@ import { bytesToMegabytes } from "@/assets/js";
 
 const fs = new FilestackApi();
 
-// TODO: Add filestack
-
 const StaffNewAnnouncement = ({
   open,
   onSave,

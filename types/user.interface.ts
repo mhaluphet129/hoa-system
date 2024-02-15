@@ -9,7 +9,6 @@ export interface User {
   homeownerId?: Homeowner;
   staffId?: Staff;
   treasurerId?: Treasurer;
-  dateCreated?: Date;
 }
 
 export interface Homeowner {

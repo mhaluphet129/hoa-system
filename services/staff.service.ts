@@ -3,7 +3,7 @@ import { AnnouncementDTO } from "@/assets/dto";
 import { validate } from "class-validator";
 import { Response } from "@/types";
 
-export default class StaffService {
+export class StaffService {
   private readonly instance = new ApiService();
 
   public async newAnnouncement(announce: AnnouncementDTO): Promise<Response> {

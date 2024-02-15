@@ -12,8 +12,6 @@ import Announcement from "@/app/components/staff/announcement";
 import Event from "@/app/components/staff/event";
 import Concern from "@/app/components/staff/concern";
 
-// TODO: Add notif banner count
-
 const selectedItemsStyle = {
   color: "#DEE4EE",
   backgroundColor: "#000",
@@ -50,8 +48,27 @@ const Staff: React.FC = () => {
                     },
             },
             {
-              label: "Notifications",
+              label: (
+                <>
+                  <span className="ant-menu-title-content">Notifications</span>{" "}
+                  <span
+                    style={{
+                      color: "#fff",
+                      background: "#3C50E0",
+                      borderRadius: 2,
+                      padding: 4,
+                      width: 20,
+                      height: 20,
+                      fontSize: ".65em",
+                      textAlign: "center",
+                    }}
+                  >
+                    12
+                  </span>
+                </>
+              ),
               key: "notification",
+
               icon: <FaRegBell />,
               style:
                 selectedKey == "notification"

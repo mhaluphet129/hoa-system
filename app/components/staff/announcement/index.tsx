@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 
 import jason from "@/assets/json/constants.json";
 import { AnnouncementProps } from "@/types";
-import StaffService from "@/services/staff.service";
+import { StaffService } from "@/services";
 import { useUserStore } from "@/services/context/user.context";
 
 import StaffNewAnnouncement from "./components/new_announcement";

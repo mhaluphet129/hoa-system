@@ -1,21 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Card, Alert, message } from "antd";
+import Cookies from "js-cookie";
+import bcrypt from "bcryptjs";
 import {
   MailOutlined,
   EyeOutlined,
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
-import Cookies from "js-cookie";
 
-import AuthService from "@/services/auth.service";
 import { verify } from "@/assets/js";
+import {
+  UserRegistrationDTO,
+  UserTreasurerDTO,
+  UserStaffDTO,
+} from "@/assets/dto";
+import { PasswordGenerator as passwordGenerator } from "@/assets/js";
+import { AuthService, UtilService, UserService } from "@/services";
 import { useUserStore, useAuthStore } from "@/services/context";
+import { UserType } from "@/types";
+
+// TODO:  board of director, otherwise create each one of them
 
 const Login = ({ private_key }: { private_key: string }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState({ isError: false, errorMessage: "" });
   const [form] = Form.useForm();
   const auth = new AuthService();
+  const util = new UtilService();
+  const user = new UserService();
 
   const { setUser } = useUserStore();
   const { setAccessToken } = useAuthStore();
@@ -40,6 +52,70 @@ const Login = ({ private_key }: { private_key: string }) => {
       }
     }
   };
+
+  const createStakeholder = async (type: string) => {
+    let username = "";
+    let password = await bcrypt.hash(
+      "password",
+      8
+    ); /* await bcrypt.hash(passwordGenerator(), 8); */
+    let stakeholder: UserStaffDTO | UserTreasurerDTO = {};
+
+    switch (type) {
+      case "staff": {
+        username = "staff-01";
+        stakeholder = {
+          name: "Staff 1",
+          role: "admin",
+        };
+        break;
+      }
+
+      case "treasurer": {
+        username = "treasurer-01";
+        stakeholder = {
+          account_balance: 0,
+        };
+        break;
+      }
+
+      case "bod": {
+        return;
+      }
+    }
+
+    if (username != "" && type) {
+      let newUser: UserRegistrationDTO = {
+        username,
+        password,
+        type,
+        [type]: stakeholder,
+      };
+
+      let res = await user.createUser(newUser);
+      if (res.success)
+        message.success(
+          "Successfully initiated account for Staff, Treasurer and Board of Director"
+        );
+      else message.error("There is error on creation of initial stakeholders");
+    }
+  };
+
+  useEffect(() => {
+    // check stakeholders
+    (async (_) => {
+      let res = await _.checkStakeholders();
+      if (res.success) {
+        if (res.data) {
+          Object.keys(res.data).map((e) => {
+            if (!(res.data![e] ?? true)) createStakeholder(e);
+          });
+        }
+      } else {
+        message.error("There is an error on checking api");
+      }
+    })(util);
+  }, []);
 
   return (
     <div
@@ -95,6 +171,7 @@ const Login = ({ private_key }: { private_key: string }) => {
                 },
               }}
               addonAfter={<MailOutlined />}
+              autoFocus
             />
           </Form.Item>
           <Form.Item label="Password" name="password">

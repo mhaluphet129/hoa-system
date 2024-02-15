@@ -3,7 +3,6 @@ import { Image, Spin, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { SelectImageProps } from "@/types";
 
-// todo: "confirm" to upload feature outside this component okay ?
 const ImageUpload = ({
   setSelectedFile,
   selectedFile,

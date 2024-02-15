@@ -2,6 +2,8 @@ import axios from "axios";
 import { verify } from "@/assets/js";
 import { useAuthStore } from "./context";
 
+// TODO: re-adjust the expire token if user still accessing the api
+
 class API {
   public async get({
     endpoint,
