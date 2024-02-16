@@ -8,20 +8,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
   await dbConnect();
   const { method } = req;
   if (method?.toLocaleUpperCase() === "GET") {
-    let { page, pageSize } = req.query;
-    const _page = Number.parseInt(page!.toString()) - 1;
-
-    const total = await Announcement.countDocuments();
     return await Announcement.find()
-      .skip(_page * Number.parseInt(pageSize!.toString()))
-      .limit(Number.parseInt(pageSize!.toString()))
       .then((doc) =>
         res.json({
           code: 200,
           success: true,
           data: {
             events: doc,
-            total,
           },
         })
       )

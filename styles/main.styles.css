@@ -24,6 +24,59 @@
   text-decoration: underline;
 }
 
+.x-labels {
+  background-color: #3c50e0;
+  color: #fff;
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+.x-labels div.day-label {
+  margin-left: 20px;
+}
+
+.dayz .day {
+  border-right: 1px solid #e2e8f0 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  background-color: #fff !important;
+}
+
+.days {
+  border-top: 1px solid #e2e8f0 !important;
+  border-left: 1px solid #e2e8f0 !important;
+}
+
+.event {
+  height: 20px !important;
+  background-color: #eff4fb !important;
+  z-index: 1 !important;
+}
+
+.event .evbody div {
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.event:hover {
+  background-color: #eee !important;
+}
+
+.event::before {
+  content: "";
+  width: 5px;
+  background-color: #3c50e0;
+  position: absolute;
+  z-index: 999;
+  height: 18px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.is-continuation::before {
+  content: "" !important;
+  background-color: #fff;
+}
+
 @page {
   size: legal;
   margin: 0.5in;

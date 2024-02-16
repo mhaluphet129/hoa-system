@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Space, Select, Pagination } from "antd";
+import { Space, Select, Pagination, Empty, Button, Typography } from "antd";
 
 import { EventService } from "@/services";
 import { EventCardProps, PaginationProps } from "@/types";
@@ -7,6 +7,8 @@ import { EventCardProps, PaginationProps } from "@/types";
 import jason from "@/assets/json/constants.json";
 import EventCard from "./components/event_card";
 import EventCardShimmer from "@/app/shimmers/event_card";
+
+// TODO: add create announcement on empty event
 
 const StaffEvent: React.FC = () => {
   const [fetching, setFetching] = useState(false);
@@ -23,11 +25,11 @@ const StaffEvent: React.FC = () => {
 
   const event = new EventService();
 
-  useEffect(() => {
+  const getEvents = async (page: number) => {
     setFetching(true);
 
     (async (_) => {
-      let res = await _.getEvent(paginationConfig);
+      let res = await _.getEvent({ page, pageSize: paginationConfig.pageSize });
 
       if (res.success) {
         if (res.data?.events ?? false) {
@@ -47,7 +49,13 @@ const StaffEvent: React.FC = () => {
         }
       } else setFetching(false);
     })(event);
-  }, [paginationConfig]);
+  };
+
+  useEffect(() => {
+    (async () => {
+      await getEvents(1);
+    })();
+  }, []);
 
   return (
     <div
@@ -96,9 +104,10 @@ const StaffEvent: React.FC = () => {
           overflow: "scroll",
           padding: 20,
           alignSelf: "start",
+          maxWidth: "100%",
         }}
       >
-        {fetching && announcement.length == 0
+        {fetching
           ? Array(5)
               .fill(0)
               .map((e, i) => (
@@ -114,12 +123,33 @@ const StaffEvent: React.FC = () => {
               />
             ))}
       </Space>
-      <Pagination
-        defaultCurrent={1}
-        total={paginationConfig.total}
-        pageSize={paginationConfig.pageSize}
-        onChange={(page, pageSize) => setPaginationConfig({ pageSize, page })}
-      />
+      {announcement.length > 0 ? (
+        <Pagination
+          defaultCurrent={1}
+          total={paginationConfig.total}
+          pageSize={paginationConfig.pageSize}
+          onChange={(page, pageSize) => {
+            setPaginationConfig({ pageSize, page });
+            getEvents(page);
+          }}
+        />
+      ) : fetching ? (
+        <></>
+      ) : (
+        <Empty
+          image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
+          imageStyle={{
+            height: 60,
+          }}
+          description={
+            <Typography.Text type="secondary">
+              There are no announcement posted
+            </Typography.Text>
+          }
+        >
+          <Button type="primary">Create Now</Button>
+        </Empty>
+      )}
     </div>
   );
 };

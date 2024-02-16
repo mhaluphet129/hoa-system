@@ -1,6 +1,7 @@
 import axios from "axios";
 import { verify } from "@/assets/js";
 import { useAuthStore } from "./context";
+import Cookies from "js-cookie";
 
 // TODO: re-adjust the expire token if user still accessing the api
 
@@ -21,6 +22,7 @@ class API {
         const flag = await verify(token!, process.env.JWT_PRIVATE_KEY!);
         if (!token && !flag && !publicRoute) throw new Error("No bearer");
       } catch {
+        Cookies.remove("token");
         return new Fail({
           code: 401,
           response: { message: "Incorrect/No Bearer token" },
@@ -59,9 +61,8 @@ class API {
       try {
         const flag = await verify(token!, process.env.JWT_PRIVATE_KEY!);
         if (!token || !flag) throw new Error("No bearer");
-      } catch (e) {
-        console.log(e);
-
+      } catch {
+        Cookies.remove("token");
         return new Fail({
           code: 401,
           response: { message: "Incorrect/No Bearer token" },
