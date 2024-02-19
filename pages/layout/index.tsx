@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Layout, Menu, Typography, Affix, Dropdown, Avatar } from "antd";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
-import Cookies from "js-cookie";
 import { PageHeader } from "@ant-design/pro-layout";
+import { GetServerSideProps } from "next";
+import Cookies from "js-cookie";
 
-import { SiderProps, ContentProps } from "@/types";
+import { SiderProps, ContentProps, Staff, Homeowner, User } from "@/types";
 import { useAuthStore } from "@/services/context";
 import { verify } from "@/assets/js";
-import { GetServerSideProps } from "next";
+
+import { useUserStore } from "@/services/context/user.context";
+import { UtilService } from "@/services";
 
 const Sider = ({ selectedIndex, selectedKey, items }: SiderProps) => {
   return (
@@ -48,6 +51,38 @@ const Sider = ({ selectedIndex, selectedKey, items }: SiderProps) => {
 };
 
 const Header = () => {
+  const { currentUser } = useUserStore();
+  const util = new UtilService();
+  const [user, setUser] = useState<User>();
+
+  const getName = (): string => {
+    switch (user?.type) {
+      case "homeowner": {
+        return `${user?.homeownerId?.name} ${user?.homeownerId?.lastname}`;
+      }
+      case "staff": {
+        return user?.staffId?.name ?? "";
+      }
+      case "treasurer": {
+        return "Treasurer no name";
+      }
+
+      case "bod": {
+        return "BOD no name";
+      }
+    }
+
+    return "N/A";
+  };
+
+  useEffect(() => {
+    (async (_) => {
+      let res = await _.getStakeholder(currentUser?._id!, currentUser?.type!);
+
+      if (res.success) setUser(res.data?.user as User);
+    })(util);
+  }, []);
+
   return (
     <Affix>
       <Layout.Header
@@ -70,13 +105,13 @@ const Header = () => {
         >
           <div style={{ display: "flex", flexDirection: "column" }}>
             <Typography.Text style={{ marginRight: 10, textAlign: "end" }}>
-              Name Lastname
+              {getName()}
             </Typography.Text>
             <Typography.Text
               type="secondary"
               style={{ marginRight: 10, textAlign: "end" }}
             >
-              Position
+              {user?.type?.toLocaleUpperCase()}
             </Typography.Text>
           </div>
           <Dropdown

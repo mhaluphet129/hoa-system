@@ -22,4 +22,26 @@ export class UtilService {
       };
     }
   }
+
+  public async getStakeholder(id: string, type: string): Promise<Response> {
+    let response = await this.instance.get({
+      endpoint: "/etc/get-stakeholder",
+      query: {
+        id,
+        type,
+      },
+    });
+
+    if (response instanceof Success) {
+      return {
+        code: response.code,
+        success: true,
+        data: response.response.data,
+      };
+    } else {
+      return {
+        code: 500,
+      };
+    }
+  }
 }
