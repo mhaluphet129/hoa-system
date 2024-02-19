@@ -8,7 +8,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
   await dbConnect();
 
-  // push to change env
+  // push to change env (2)
 
   const { method } = req;
 
