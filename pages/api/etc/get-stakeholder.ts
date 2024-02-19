@@ -8,6 +8,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
   await dbConnect();
 
+  // push to change env
+
   const { method } = req;
 
   if (method?.toLocaleUpperCase() === "GET") {
