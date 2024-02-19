@@ -5,13 +5,14 @@ export async function sign(
   secret: string
 ): Promise<string> {
   const iat = Math.floor(Date.now() / 1000);
-  const exp = iat + 60 * 60; // one hour
+  const exp = Math.floor((new Date().getTime() + 24 * 60 * 60 * 1000) / 1000); // one hour
+  const nbf = Math.floor((new Date().getTime() - 60 * 60 * 1000) / 1000);
 
   return new SignJWT({ ...payload })
     .setProtectedHeader({ alg: "HS256", typ: "JWT" })
     .setExpirationTime(exp)
     .setIssuedAt(iat)
-    .setNotBefore(iat)
+    .setNotBefore(nbf)
     .sign(new TextEncoder().encode(secret));
 }
 
