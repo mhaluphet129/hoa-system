@@ -85,3 +85,17 @@ export class UserStaffDTO {
   @IsString()
   role?: string;
 }
+
+export class UpdateUserDTO {
+  @IsOptional()
+  @IsString()
+  username?: string;
+
+  @IsOptional()
+  @IsString()
+  password?: string;
+
+  @IsOptional()
+  @IsEnum(["homeowner", "staff", "treasurer", "bod"])
+  type?: string;
+}

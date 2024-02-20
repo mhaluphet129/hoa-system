@@ -77,6 +77,10 @@
   background-color: #fff;
 }
 
+.MyForm .ant-form-item-label {
+  padding-bottom: 0;
+}
+
 @page {
   size: legal;
   margin: 0.5in;

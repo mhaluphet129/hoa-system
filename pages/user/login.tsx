@@ -14,10 +14,8 @@ import {
   UserTreasurerDTO,
   UserStaffDTO,
 } from "@/assets/dto";
-import { PasswordGenerator as passwordGenerator } from "@/assets/js";
 import { AuthService, UtilService, UserService } from "@/services";
 import { useUserStore, useAuthStore } from "@/services/context";
-import { UserType } from "@/types";
 
 // TODO:  board of director, otherwise create each one of them
 

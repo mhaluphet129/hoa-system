@@ -26,7 +26,9 @@ export class HomeOwnerRegistrationDTO {
   @IsPhoneNumber()
   phone?: string;
 
-  @IsOptional()
+  @IsString()
+  homeNumber?: string;
+
   @IsDate()
   move_in_date?: Date;
 
@@ -34,12 +36,23 @@ export class HomeOwnerRegistrationDTO {
   type?: HomeOwnerType;
 
   @IsOptional()
-  @IsString()
-  spouse_name?: string;
+  currentEmployer?: string | number;
 
   @IsOptional()
   @IsString()
-  spouse_number?: number;
+  businessName?: string;
+
+  @IsOptional()
+  @IsString()
+  workPosition?: string;
+
+  @IsOptional()
+  @IsString()
+  spouseName?: string;
+
+  @IsOptional()
+  @IsString()
+  spouseNumber?: number;
 
   @IsNumber()
   monthly_due?: number;

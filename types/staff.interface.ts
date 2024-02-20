@@ -1,5 +1,3 @@
-import { Homeowner } from "./user.interface";
-
 interface AnnouncementProps {
   title: string;
   description: string;
@@ -26,12 +24,6 @@ interface PaginationProps {
   total?: number;
 }
 
-interface ConcernDetalsCardProps {
-  open: boolean;
-  close: () => void;
-  concern?: ConcernProps;
-}
-
 type SelectImageProps = {
   setSelectedFile: (file: File | null) => void;
   selectedFile: File | null;
@@ -42,14 +34,6 @@ export type {
   AnnouncementProps,
   AnnouncementControllerProps,
   EventCardProps,
-  ConcernDetalsCardProps,
   SelectImageProps,
   PaginationProps,
 };
-
-interface ConcernProps {
-  title: string;
-  description: string;
-  dateCreated: Date;
-  homeowner: Homeowner;
-}
