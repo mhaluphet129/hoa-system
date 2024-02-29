@@ -1,9 +1,11 @@
-import { ReactNode } from "react";
-import { Button, Table, Tag, Typography } from "antd";
+import { ReactNode, useState } from "react";
+import { Button, Table, Tag, Typography, notification } from "antd";
 import dayjs from "dayjs";
 import { CopyOutlined, PrinterOutlined } from "@ant-design/icons";
 
 const Dues = () => {
+  const [api, contextHolder] = notification.useNotification();
+  const [counter, setCounter] = useState(1);
   const getTransationTypeBadge = (str: string): ReactNode => {
     let bgColor = "";
     let textColor = "";
@@ -93,50 +95,63 @@ const Dues = () => {
   ];
 
   return (
-    <Table
-      dataSource={mock}
-      columns={[
-        {
-          title: "ID",
-          dataIndex: "id",
-        },
-        {
-          title: "Transaction Type",
-          render: (_, row) => getTransationTypeBadge(row?.type),
-        },
-        {
-          title: "Date Request",
-          render: (_, row) => dayjs(row?.dateCreated).format("MMMM DD, YYYY"),
-        },
-        {
-          title: "Reference #",
-          render: (_, row) =>
-            row.refNumber ? (
-              <Typography.Link>
-                <CopyOutlined />
-                {"   "}
-                {row?.refNumber}
-              </Typography.Link>
-            ) : (
-              <Typography.Text type="secondary" italic>
-                Not Yet
-              </Typography.Text>
-            ),
-        },
-        {
-          title: "Status",
-          render: (_, row) => getStatusBadge(row?.status),
-        },
-        {
-          title: "Action",
-          align: "center",
-          render: (_, row) => <Button icon={<PrinterOutlined />} />,
-        },
-      ]}
-      style={{
-        width: 900,
-      }}
-    />
+    <>
+      <Button
+        onClick={() => {
+          setCounter(counter + 1);
+          api.info({
+            message: `Transaction ID #${counter} has been updated`,
+          });
+        }}
+      >
+        CLICK ME
+      </Button>
+      {contextHolder}
+    </>
+    // <Table
+    //   dataSource={mock}
+    //   columns={[
+    //     {
+    //       title: "ID",
+    //       dataIndex: "id",
+    //     },
+    //     {
+    //       title: "Transaction Type",
+    //       render: (_, row) => getTransationTypeBadge(row?.type),
+    //     },
+    //     {
+    //       title: "Date Request",
+    //       render: (_, row) => dayjs(row?.dateCreated).format("MMMM DD, YYYY"),
+    //     },
+    //     {
+    //       title: "Reference #",
+    //       render: (_, row) =>
+    //         row.refNumber ? (
+    //           <Typography.Link>
+    //             <CopyOutlined />
+    //             {"   "}
+    //             {row?.refNumber}
+    //           </Typography.Link>
+    //         ) : (
+    //           <Typography.Text type="secondary" italic>
+    //             Not Yet
+    //           </Typography.Text>
+    //         ),
+    //     },
+    //     {
+    //       title: "Status",
+    //       render: (_, row) => getStatusBadge(row?.status),
+    //     },
+    //     {
+    //       title: "Action",
+    //       align: "center",
+    //       render: (_, row) => <Button icon={<PrinterOutlined />} />,
+    //     },
+    //   ]}
+    //   style={{
+    //     width: 900,
+    //   }}
+    // />
   );
 };
 

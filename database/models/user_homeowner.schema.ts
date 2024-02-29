@@ -20,12 +20,8 @@ const HomeOwnerSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    homeNumber: {
+    address: {
       type: String,
-      required: true,
-    },
-    move_in_date: {
-      type: Date,
       required: true,
     },
     type: {
@@ -38,19 +34,10 @@ const HomeOwnerSchema = new mongoose.Schema(
       enum: ["active", "inactive"],
       default: "active",
     },
-    immediateFamily: Array,
-    // {
-    //   name: string,
-    //   age: number
-    // }
-    currentEmployer: String || Number,
-    businessName: String,
-    workPosition: String,
-    spouseName: String,
-    spouseNumber: Number,
-    monthly_due: Number,
-    annual_membership_fee: Number,
-    profile_description: String,
+    gender: {
+      type: String,
+      enum: ["male", "female"],
+    },
   },
   {
     timestamps: false,

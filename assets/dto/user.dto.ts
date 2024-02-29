@@ -4,8 +4,8 @@ import {
   IsEnum,
   IsEmail,
   IsPhoneNumber,
-  IsDateString,
   IsNumber,
+  IsMongoId,
 } from "class-validator";
 import type { UserType, Homeowner, Staff, Treasurer } from "@/types";
 
@@ -47,30 +47,8 @@ export class UserHomeOwnerDTO {
   @IsPhoneNumber()
   phone?: string;
 
-  @IsOptional()
-  @IsDateString()
-  move_in_date?: Date;
-
   @IsEnum(["owner", "render"])
   type?: string;
-
-  @IsOptional()
-  @IsString()
-  spouse_name?: string;
-
-  @IsOptional()
-  @IsPhoneNumber()
-  spouse_number?: any;
-
-  @IsNumber()
-  monthly_due?: Number;
-
-  @IsNumber()
-  annual_membership_fee?: Number;
-
-  @IsOptional()
-  @IsString()
-  profile_description?: string;
 }
 
 export class UserTreasurerDTO {
@@ -87,6 +65,9 @@ export class UserStaffDTO {
 }
 
 export class UpdateUserDTO {
+  @IsMongoId()
+  id?: string;
+
   @IsOptional()
   @IsString()
   username?: string;
@@ -98,4 +79,16 @@ export class UpdateUserDTO {
   @IsOptional()
   @IsEnum(["homeowner", "staff", "treasurer", "bod"])
   type?: string;
+
+  @IsOptional()
+  @IsMongoId()
+  homeownerId?: string;
+
+  @IsOptional()
+  @IsMongoId()
+  staffId?: string;
+
+  @IsOptional()
+  @IsMongoId()
+  treasurerId?: string;
 }

@@ -1,18 +1,22 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import { Select, Button, Table, Space, message } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
 import jason from "@/assets/json/constants.json";
 import { AnnouncementProps } from "@/types";
-import { StaffService } from "@/services";
+import { StaffService, EventService } from "@/services";
 import { useUserStore } from "@/services/context/user.context";
 
 import StaffNewAnnouncement from "./components/new_announcement";
 
+// todo: (future) add lazy-load
+
 const StaffAnnouncement: React.FC = () => {
   const [openNewAnnouncement, setOpenNewAnnouncement] = useState(false);
-  const [loader, setLoader] = useState<string[]>([]);
+  const [announcement, setAnnouncement] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [trigger, setTrigger] = useState(0);
   const [filter, setFilter] = useState({
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
@@ -20,21 +24,26 @@ const StaffAnnouncement: React.FC = () => {
 
   const { currentUser } = useUserStore();
   const staff = new StaffService();
+  const event = new EventService();
 
   const columns = [
     {
       title: "Title",
+      dataIndex: "title",
     },
     {
       title: "Description",
+      dataIndex: "description",
     },
     {
       title: "Date Created",
-      render: (_: any, row: any) =>
-        dayjs(row?.createdAt).format("MMM DD, YYYY"),
+      dataIndex: "createdAt",
+      render: (_: any) => dayjs(_).format("MMM DD, YYYY"),
     },
     {
       title: "Created By",
+      dataIndex: "staffId",
+      render: (_: any) => _.name,
     },
     {
       title: "Action",
@@ -47,20 +56,28 @@ const StaffAnnouncement: React.FC = () => {
   ];
 
   const newAnnouncement = async (props: AnnouncementProps) => {
-    setLoader([...loader, "new-announce"]);
     let res = await staff.newAnnouncement({
       ...props,
       staffId: currentUser!._id,
     });
 
     if (res.success ?? false) {
-      setLoader(loader.filter((e) => e != "new-announce"));
       message.success("New Announce added Successfully");
       setOpenNewAnnouncement(false);
-    } else {
-      setLoader(loader.filter((e) => e != "new-announce"));
+      setTrigger(trigger + 1);
     }
   };
+
+  useEffect(() => {
+    (async (_) => {
+      const res = await _.getEvent({ page: 1, pageSize: 10 });
+
+      if (res?.success) {
+        setAnnouncement(res?.data?.events);
+        setTotal(res?.data?.total);
+      }
+    })(event);
+  }, [trigger]);
 
   return (
     <>
@@ -111,14 +128,21 @@ const StaffAnnouncement: React.FC = () => {
           </Button>
         </div>
       </div>
-      <Table columns={columns} />
+      <Table
+        dataSource={announcement}
+        columns={columns}
+        rowKey={(e) => e._id}
+        pagination={{
+          total,
+        }}
+      />
 
       {/* context */}
       <StaffNewAnnouncement
         open={openNewAnnouncement}
         onSave={newAnnouncement}
         close={() => setOpenNewAnnouncement(false)}
-        isLoading={loader.includes("new-announce")}
+        isLoading={staff.loaderHas("new-annouce")}
       />
     </>
   );

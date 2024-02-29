@@ -15,6 +15,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
     return await Announcement.find()
       .skip(_page * Number.parseInt(pageSize!.toString()))
       .limit(Number.parseInt(pageSize!.toString()))
+      .populate("staffId")
       .then((doc) =>
         res.json({
           code: 200,

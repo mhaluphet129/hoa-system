@@ -29,7 +29,7 @@ export class RegistrationService extends Loader {
       return {
         code: response.code,
         success: true,
-        data: response.response,
+        data: response.response.data,
       };
     } else {
       this.loaderPop("register");

@@ -1,6 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Button, Input, Select, Spin, Table } from "antd";
-import { SearchOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Input,
+  Select,
+  Space,
+  Spin,
+  Table,
+  Tag,
+  Tooltip,
+  Typography,
+} from "antd";
+import {
+  SearchOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
 
 import { UserService } from "@/services";
 
@@ -16,7 +32,7 @@ const HomeOwner = () => {
     {
       title: "Name",
       render: (_: any, row: any) =>
-        `${row?.homeownerId.name} ${row?.homeownerId.lastname}`,
+        `${row?.homeownerId?.name} ${row?.homeownerId?.lastname}`,
     },
     {
       title: "Username",
@@ -24,21 +40,50 @@ const HomeOwner = () => {
     },
     {
       title: "Contact Number",
-      render: (_: any, row: any) => row?.homeownerId?.phone,
+      render: (_: any, row: any) =>
+        row?.homeownerId ? (
+          row?.homeownerId?.phone
+        ) : (
+          <Typography.Text type="secondary" italic>
+            Not Set
+          </Typography.Text>
+        ),
     },
     {
       title: "Status",
-      render: (_: any, row: any) => row?.homeownerId?.status,
+      render: (_: any, row: any) =>
+        row?.homeownerId ? (
+          <Tag color={row?.homeownerId?.status == "active" ? "green" : "red"}>
+            {row?.homeownerId?.status}
+          </Tag>
+        ) : (
+          <Typography.Text type="secondary" italic>
+            Not Set
+          </Typography.Text>
+        ),
     },
     {
       title: "Functions",
+      align: "center",
+      render: (_: any, row: any) => (
+        <Space>
+          <Tooltip title="View">
+            <Button icon={<EyeOutlined />} />
+          </Tooltip>
+          <Tooltip title="Edit">
+            <Button icon={<EditOutlined />} />
+          </Tooltip>
+          <Tooltip title="Delete">
+            <Button icon={<DeleteOutlined />} danger />
+          </Tooltip>
+        </Space>
+      ),
     },
   ];
 
   useEffect(() => {
     (async (_) => {
       let res = await _.getUsers("homeowner");
-      console.log(res);
       if (res.success) {
         setUsers(res?.data?.users);
       }
@@ -92,6 +137,7 @@ const HomeOwner = () => {
       </div>
       <Table
         dataSource={users}
+        // @ts-ignore
         columns={columns}
         style={{
           marginTop: 10,
