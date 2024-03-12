@@ -1,11 +1,15 @@
 import dbConnect from "@/database/dbConnect";
 import User from "@/database/models/user.schema";
+import { ExtendedResponse, User as UserType } from "@/types";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
 // TODO: then email the account credentials via node mailer
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ExtendedResponse<UserType[]>>
+) {
   await dbConnect();
   const { method } = req;
 
@@ -13,18 +17,23 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { type } = req.query;
     return await User.find({ type })
       .populate("homeownerId staffId treasurerId")
-      .then((e) => res.json({ code: 200, success: true, data: { users: e } }))
+      .then((e) =>
+        res.json({ code: 200, success: true, data: e as UserType[] })
+      )
       .catch((e) => {
         console.log(e);
         return res.json({
           code: 500,
           success: false,
-          data: {
-            message: "Error in the server",
-          },
+          message: "Error in the server",
         });
       });
-  } else return res.json({ status: 500, message: "Error in the server." });
+  } else
+    return res.json({
+      success: false,
+      code: 500,
+      message: "Error in the server.",
+    });
 }
 
 export default handler;

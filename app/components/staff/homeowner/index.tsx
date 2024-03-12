@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {
+  Badge,
   Button,
   Input,
+  Popconfirm,
   Select,
   Space,
   Spin,
@@ -9,6 +11,7 @@ import {
   Tag,
   Tooltip,
   Typography,
+  message,
 } from "antd";
 import {
   SearchOutlined,
@@ -21,10 +24,12 @@ import {
 import { UserService } from "@/services";
 
 import NewHomeOwner from "./components/new_homeowner";
+import { User } from "@/types";
 
 const HomeOwner = () => {
   const [openNewHomeowner, setOpenNewHomeowner] = useState(false);
-  const [users, setUsers] = useState([]);
+  const [trigger, setTrigger] = useState(0);
+  const [users, setUsers] = useState<User[]>([]);
 
   const user = new UserService();
 
@@ -60,7 +65,13 @@ const HomeOwner = () => {
       dataIndex: "status",
       render: (status: any) =>
         status ? (
-          <Tag color={status == "active" ? "green" : "red"}>{status}</Tag>
+          <Tag color={status == "active" ? "green" : "red"}>
+            <Badge
+              color={status == "active" ? "green" : "red"}
+              style={{ marginRight: 5 }}
+            />{" "}
+            {status}
+          </Tag>
         ) : (
           <Typography.Text type="secondary" italic>
             Not Set
@@ -69,8 +80,9 @@ const HomeOwner = () => {
     },
     {
       title: "Functions",
+      dataIndex: "_id",
       align: "center",
-      render: (_: any, row: any) => (
+      render: (_: any) => (
         <Space>
           <Tooltip title="View">
             <Button icon={<EyeOutlined />} />
@@ -79,21 +91,38 @@ const HomeOwner = () => {
             <Button icon={<EditOutlined />} />
           </Tooltip>
           <Tooltip title="Delete">
-            <Button icon={<DeleteOutlined />} danger />
+            <Popconfirm
+              title="Are you sure you want to delete this homeowner?"
+              okText="Delete"
+              okType="danger"
+              onConfirm={() => handleDelete(_)}
+            >
+              <Button icon={<DeleteOutlined />} danger />
+            </Popconfirm>
           </Tooltip>
         </Space>
       ),
     },
   ];
 
-  // useEffect(() => {
-  //   (async (_) => {
-  //     let res = await _.getUsers("homeowner");
-  //     if (res.success) {
-  //       setUsers(res?.data?.users);
-  //     }
-  //   })(user);
-  // }, [openNewHomeowner]);
+  const handleDelete = (id: string) => {
+    (async (_) => {
+      let res = await _.removeHomeOwner(id);
+      if (res.success) {
+        message.success(res.message ?? "Success");
+        setTrigger(trigger + 1);
+      }
+    })(user);
+  };
+
+  useEffect(() => {
+    (async (_) => {
+      let res = await _.getUsers("homeowner");
+      if (res.success) {
+        setUsers(res?.data ?? []);
+      }
+    })(user);
+  }, [openNewHomeowner, trigger]);
 
   return (
     <Spin spinning={user.loaderHas("fetch-user")}>
@@ -109,7 +138,6 @@ const HomeOwner = () => {
           placeholder="Search homeowner..."
         />
         <Button
-          type="text"
           icon={<PlusOutlined />}
           onClick={() => setOpenNewHomeowner(true)}
         >
@@ -147,7 +175,7 @@ const HomeOwner = () => {
         style={{
           marginTop: 10,
         }}
-        rowKey={(e) => e._id}
+        rowKey={(e) => e._id ?? "iser"}
       />
       {/* context */}
 

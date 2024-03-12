@@ -11,8 +11,9 @@ import {
   message,
 } from "antd";
 import { MailOutlined } from "@ant-design/icons";
+import bcrypt from "bcryptjs";
 
-import { NewHomeownerCardProps } from "@/types";
+import { Homeowner, NewHomeownerCardProps } from "@/types";
 import { RegistrationService, UserService } from "@/services";
 
 const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
@@ -67,11 +68,11 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
   };
 
   const handleNewUser = async (val: any) => {
+    val.password = await bcrypt.hash(val.password, 8);
     await user.createUser({ ...val, type: "homeowner" }).then((e) => {
       if (e.success) {
-        setHoEmail(val.email);
+        setHoEmail(val.username);
         if (e?.data?._id) setHoId(e?.data?._id);
-
         message.success(
           "Succesfully created initital account and emailed the credentials"
         );
@@ -81,7 +82,7 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
   };
 
   const handleUpdateUser = async () => {
-    let val = {
+    let val: Homeowner = {
       lastname: form2Input.lname,
       name: form2Input.fname,
       type: form2Input.memberType,
@@ -93,19 +94,21 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
 
     if (form2Input.mname != "") val.middlename = form2Input.mname;
     val.email = hoEmail;
-    // await register.newHomeOwner(val).then(async (e) => {
-    //   console.log(e);
-    //   await user
-    //     .updateUser({ id: hoId, homeownerId: e.data?._id })
-    //     .then((_) => {
-    //       if (_.success) {
-    //         message.success("Succesfully updated");
-    //         cls();
-    //       } else {
-    //         message.error("Error in the server");
-    //       }
-    //     });
-    // });
+    await register
+      .newHomeOwner(val)
+      .then(async (e) => {
+        await user
+          .updateUser({ id: hoId, homeownerId: e.data?._id ?? "" })
+          .then((_) => {
+            if (_.success) {
+              message.success("Succesfully updated");
+              cls();
+            } else {
+              message.error("Error in the server");
+            }
+          });
+      })
+      .catch((e) => {});
   };
 
   const getBodyByStep = () => {

@@ -1,4 +1,4 @@
-import { HomeOwnerType, UserType, Homeowner } from "./user.interface";
+import { UserType, Homeowner } from "./user.interface";
 
 export type NotificationStatus = "due" | "pending" | "completed";
 
@@ -7,16 +7,6 @@ export type SelectImageProps = {
   selectedFile: File | null;
   loading?: boolean;
 };
-
-export interface NewHomeownerProps {
-  name: string;
-  middlename?: string;
-  lastname: string;
-  address: string;
-  phone: string;
-  type: HomeOwnerType;
-  email: string;
-}
 
 export interface NewUserProps {
   username: string;
@@ -68,18 +58,6 @@ export interface NewHomeownerCardProps {
   close: () => void;
 }
 
-export interface ApiGetProps {
-  endpoint: string;
-  query?: Record<any, any>;
-  publicRoute?: boolean;
-}
-
-export interface ApiPostProps {
-  endpoint: string;
-  payload?: Record<any, any>;
-  publicRoute?: boolean;
-}
-
 export interface ConcernProps {
   title: string;
   description: string;
@@ -90,4 +68,17 @@ export interface ConcernProps {
 export interface LoginProp {
   username: string;
   password: string;
+}
+
+// api
+export interface ApiGetProps {
+  endpoint: string;
+  query?: Record<any, any>;
+  publicRoute?: boolean;
+}
+
+export interface ApiPostProps {
+  endpoint: string;
+  payload?: Record<any, any>;
+  publicRoute?: boolean;
 }

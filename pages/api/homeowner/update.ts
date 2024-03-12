@@ -13,7 +13,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   if (method === "POST") {
     const { id } = req.body;
-    console.log(id);
     let homeOwnerId = await User.findOne({ _id: id })
       .lean()
       .then((e) => e?.homeownerId);

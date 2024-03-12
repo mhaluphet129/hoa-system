@@ -25,13 +25,16 @@ export interface ProtectedUserWithToken extends ProtectedUser {
 }
 
 export interface Homeowner {
+  _id?: string;
   name: string;
   middlename?: string;
   lastname: string;
   email: string;
   phone: string;
-  type: HomeOwnerType;
+  type: HomeOwnerType | string;
   address: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface Staff {
@@ -44,5 +47,7 @@ export interface Treasurer {
 }
 
 // utils literal haha
-
-export default User;
+export interface UpdateHomeownerProps {
+  id: string;
+  homeownerId: string;
+}

@@ -1,5 +1,10 @@
 import ApiService from "./api.service";
-import { ExtendedResponse, User } from "@/types";
+import {
+  ExtendedResponse,
+  User,
+  UpdateHomeownerProps,
+  Response,
+} from "@/types";
 
 import Loader from "./utils/class_loader";
 
@@ -19,55 +24,35 @@ export class UserService extends Loader {
     return response;
   }
 
-  // public async updateUser(user: UpdateUserDTO): Promise<Response> {
-  //   const response = this.instance.post({
-  //     endpoint: "/user/update-user",
-  //     payload: user,
-  //   });
+  public async updateUser(user: UpdateHomeownerProps): Promise<Response> {
+    this.loaderPush("updating-ho");
+    const response = this.instance.post({
+      endpoint: "/user/update-user",
+      payload: user,
+    });
+    this.loaderPop("updating-ho");
+    return response;
+  }
 
-  //   if (response instanceof Success) {
-  //     return {
-  //       code: response.code,
-  //       success: true,
-  //       data: response.response.user,
-  //     };
-  //   } else {
-  //     return {
-  //       code: 500,
-  //       success: false,
-  //       data: {
-  //         message: "Error in the server.",
-  //       },
-  //     };
-  //   }
-  // }
+  public async getUsers(type: string): Promise<ExtendedResponse<User[]>> {
+    this.loaderPush("fetch-user");
+    const response = await this.instance.get<User[]>({
+      endpoint: "/user/get-users",
+      query: {
+        type,
+      },
+    });
+    this.loaderPop("fetch-user");
+    return response;
+  }
 
-  // public async getUsers(type: string): Promise<Response> {
-  //   this.loaderPush("fetch-user");
-  //   const response = await this.instance.get({
-  //     endpoint: "/user/get-users",
-  //     query: {
-  //       type,
-  //     },
-  //   });
-  //   if (response instanceof Success) {
-  //     this.loaderPop("fetch-user");
-  //     return {
-  //       code: response.code,
-  //       success: true,
-  //       data: {
-  //         users: response.response.data.users,
-  //       },
-  //     };
-  //   } else {
-  //     this.loaderPop("fetch-user");
-  //     return {
-  //       code: 500,
-  //       success: false,
-  //       data: {
-  //         message: "Error in the server.",
-  //       },
-  //     };
-  //   }
-  // }
+  public async removeHomeOwner(id: string): Promise<Response> {
+    this.loaderPush("removing-ho");
+    const response = await this.instance.get<Response>({
+      endpoint: "/homeowner/remove-homeowner",
+      query: { id },
+    });
+    this.loaderPop("removing-ho");
+    return response;
+  }
 }
