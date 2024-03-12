@@ -1,10 +1,13 @@
 import dbConnect from "@/database/dbConnect";
 import User from "@/database/models/user.schema";
-import { Response } from "@/types";
+import { ExtendedResponse, CheckStakeholderProps } from "@/types";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
-async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
+async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ExtendedResponse<CheckStakeholderProps>>
+) {
   await dbConnect();
 
   const { method } = req;
@@ -28,18 +31,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
       res.json({
         code: 599,
         success: false,
-        data: {
-          message: "Error in the Server",
-        },
+        message: "Error in the Server",
       });
     }
   } else {
     res.json({
       code: 405,
       success: false,
-      data: {
-        message: "Incorrect Request Method",
-      },
+      message: "Incorrect Request Method",
     });
   }
 }

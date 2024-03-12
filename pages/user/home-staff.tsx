@@ -13,6 +13,9 @@ import Event from "@/app/components/staff/event";
 import Concern from "@/app/components/staff/concern";
 import Notification from "@/app/components/staff/notification";
 import Calendar from "@/app/components/staff/calendar";
+import HomeOwner from "@/app/components/staff/homeowner";
+import Dues from "@/app/components/staff/dues";
+import Dashboard from "@/app/components/staff/dashboard";
 
 const selectedItemsStyle = {
   color: "#DEE4EE",
@@ -149,11 +152,14 @@ const Staff: React.FC = () => {
         <Layout>
           <Header />
           <Content selectedKey={selectedKey}>
+            {selectedKey == "dashboard" ? <Dashboard /> : null}
             {selectedKey == "announcement" ? <Announcement /> : null}
             {selectedKey == "event" ? <Event /> : null}
             {selectedKey == "concern" ? <Concern /> : null}
             {selectedKey == "notification" ? <Notification /> : null}
             {selectedKey == "calendar" ? <Calendar /> : null}
+            {selectedKey == "homeowner" ? <HomeOwner /> : null}
+            {selectedKey == "due" ? <Dues /> : null}
           </Content>
         </Layout>
       </Layout>

@@ -9,15 +9,9 @@ import {
 } from "@ant-design/icons";
 
 import { verify } from "@/assets/js";
-import {
-  UserRegistrationDTO,
-  UserTreasurerDTO,
-  UserStaffDTO,
-} from "@/assets/dto";
-import { PasswordGenerator as passwordGenerator } from "@/assets/js";
 import { AuthService, UtilService, UserService } from "@/services";
 import { useUserStore, useAuthStore } from "@/services/context";
-import { UserType } from "@/types";
+import { Staff, Treasurer, User, UserType } from "@/types";
 
 // TODO:  board of director, otherwise create each one of them
 
@@ -37,14 +31,14 @@ const Login = ({ private_key }: { private_key: string }) => {
     if (!res.success) {
       setError({
         isError: true,
-        errorMessage: res.data?.message ?? "Error in the server.",
+        errorMessage: res?.message ?? "Error in the server.",
       });
     } else {
       try {
-        let currentUser = await verify(res?.data?.token, private_key);
-        setAccessToken(res.data?.token);
+        let currentUser = await verify(res?.data?.token!, private_key);
+        setAccessToken(res.data?.token!);
         setUser(currentUser);
-        Cookies.set("token", res.data?.token);
+        Cookies.set("token", res.data?.token!);
         window.location.reload();
       } catch (e) {
         console.log(e);
@@ -53,13 +47,13 @@ const Login = ({ private_key }: { private_key: string }) => {
     }
   };
 
-  const createStakeholder = async (type: string) => {
+  const createStakeholder = async (type: UserType) => {
     let username = "";
     let password = await bcrypt.hash(
       "password",
       8
     ); /* await bcrypt.hash(passwordGenerator(), 8); */
-    let stakeholder: UserStaffDTO | UserTreasurerDTO = {};
+    let stakeholder: Staff | Treasurer | null = null;
 
     switch (type) {
       case "staff": {
@@ -84,8 +78,8 @@ const Login = ({ private_key }: { private_key: string }) => {
       }
     }
 
-    if (username != "" && type) {
-      let newUser: UserRegistrationDTO = {
+    if (username != "" && stakeholder != null) {
+      let newUser: User = {
         username,
         password,
         type,
@@ -107,8 +101,8 @@ const Login = ({ private_key }: { private_key: string }) => {
       let res = await _.checkStakeholders();
       if (res.success) {
         if (res.data) {
-          Object.keys(res.data).map((e) => {
-            if (!(res.data![e] ?? true)) createStakeholder(e);
+          Object.values(res.data).map((e) => {
+            if (e ?? true) createStakeholder(e);
           });
         }
       } else {

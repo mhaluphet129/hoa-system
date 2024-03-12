@@ -227,7 +227,7 @@ const StaffNewAnnouncement = ({
                   </Col>
                   <Col span={9}>
                     ({bytesToMegabytes(uploadConfig.currentSize)} of{" "}
-                    {bytesToMegabytes(uploadConfig.totalSize)})
+                    {bytesToMegabytes(uploadConfig.totalSize)}MB)
                   </Col>
                 </Row>
               )}

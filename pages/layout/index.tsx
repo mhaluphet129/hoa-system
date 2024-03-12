@@ -78,8 +78,7 @@ const Header = () => {
   useEffect(() => {
     (async (_) => {
       let res = await _.getStakeholder(currentUser?._id!, currentUser?.type!);
-
-      if (res.success) setUser(res.data?.user as User);
+      if (res.success) setUser(res.data as User);
     })(util);
   }, []);
 

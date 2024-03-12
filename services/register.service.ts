@@ -1,46 +1,49 @@
-import ApiService, { Success } from "./api.service";
+import { ExtendedResponse, Homeowner } from "@/types";
+import ApiService from "./api.service";
+import Loader from "./utils/class_loader";
 
-import { HomeOwnerRegistrationDTO } from "@/assets/dto";
-import { Response } from "@/types";
-import { useUserStore, useAuthStore } from "@/services/context";
-
-import { validate } from "class-validator";
-
-export class RegistrationService {
+export class RegistrationService extends Loader {
   private readonly instance = new ApiService();
 
-  public async newHomeOwner(user: HomeOwnerRegistrationDTO): Promise<Response> {
-    const errors = await validate(user);
-
-    if (errors.length > 0) {
-      return {
-        code: 500,
-        error: errors.map((err: any) => Object.values(err.constraints)),
-      };
-    }
-
-    const { setUser } = useUserStore();
-    const { setAccessToken } = useAuthStore();
-
-    const response = await this.instance.post({
+  public async newHomeOwner(
+    user: Homeowner
+  ): Promise<ExtendedResponse<Homeowner>> {
+    this.loaderPush("register");
+    const response = await this.instance.post<Homeowner>({
       endpoint: "/homeowner/register",
       payload: user,
     });
-
-    if (response instanceof Success) {
-      setAccessToken(response.response.token);
-      setUser(user);
-      return {
-        code: 200,
-        data: response.response,
-      };
-    } else {
-      return {
-        code: response.code,
-        data: {
-          message: response.response?.message ?? "Error in the Server",
-        },
-      };
-    }
+    this.loaderPop("register");
+    return response;
   }
+
+  // public async updateHomeowner(
+  //   user: HomeOwnerRegistrationDTO
+  // ): Promise<Response> {
+  //   // * temporary remove class-validator for dto optimization later on
+
+  //   this.loaderPush("update");
+  //   const response = await this.instance.post({
+  //     endpoint: "/homeowner/update",
+  //     payload: user,
+  //   });
+
+  //   if (response instanceof Success) {
+  //     this.loaderPop("update");
+  //     return {
+  //       code: response.code,
+  //       success: true,
+  //       data: response.response,
+  //     };
+  //   } else {
+  //     this.loaderPop("update");
+  //     return {
+  //       code: response.code,
+  //       success: false,
+  //       data: {
+  //         message: response.response?.message ?? "Error in the Server",
+  //       },
+  //     };
+  //   }
+  // }
 }

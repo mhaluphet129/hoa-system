@@ -1,18 +1,22 @@
-import React, { useState, useContext } from "react";
-import { Select, Button, Table, Space, message } from "antd";
+import React, { useState, useEffect } from "react";
+import { Select, Button, Table, Space, message, Popconfirm } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
 import jason from "@/assets/json/constants.json";
-import { AnnouncementProps } from "@/types";
-import { StaffService } from "@/services";
+import { AnnouncementProps, Event } from "@/types";
+import { StaffService, EventService } from "@/services";
 import { useUserStore } from "@/services/context/user.context";
 
 import StaffNewAnnouncement from "./components/new_announcement";
 
+// todo: (future) add lazy-load
+
 const StaffAnnouncement: React.FC = () => {
   const [openNewAnnouncement, setOpenNewAnnouncement] = useState(false);
-  const [loader, setLoader] = useState<string[]>([]);
+  const [announcement, setAnnouncement] = useState<Event[]>([]);
+  const [total, setTotal] = useState(0);
+  const [trigger, setTrigger] = useState(0);
   const [filter, setFilter] = useState({
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
@@ -20,47 +24,82 @@ const StaffAnnouncement: React.FC = () => {
 
   const { currentUser } = useUserStore();
   const staff = new StaffService();
+  const event = new EventService();
 
   const columns = [
     {
       title: "Title",
+      dataIndex: "title",
     },
     {
       title: "Description",
+      dataIndex: "description",
     },
     {
       title: "Date Created",
-      render: (_: any, row: any) =>
-        dayjs(row?.createdAt).format("MMM DD, YYYY"),
+      dataIndex: "createdAt",
+      render: (_: any) => dayjs(_).format("MMM DD, YYYY"),
     },
     {
       title: "Created By",
+      dataIndex: "staffId",
+      render: (_: any) => _.name,
     },
     {
       title: "Action",
+      dataIndex: "_id",
       render: (_: any, row: any) => (
         <Space>
-          <Button icon={<DeleteOutlined />} danger />
+          <Popconfirm
+            title="Are you sure you want to delete?"
+            okText="Delete"
+            okType="danger"
+            onConfirm={(e) => handleRemove(_)}
+          >
+            <Button icon={<DeleteOutlined />} danger />
+          </Popconfirm>
         </Space>
       ),
     },
   ];
 
   const newAnnouncement = async (props: AnnouncementProps) => {
-    setLoader([...loader, "new-announce"]);
+    console.log(props);
     let res = await staff.newAnnouncement({
-      ...props,
-      staffId: currentUser!._id,
+      title: props.title,
+      description: props.description,
+      staffId: currentUser?._id ?? "",
+      images: props?.image ?? [],
     });
 
     if (res.success ?? false) {
-      setLoader(loader.filter((e) => e != "new-announce"));
       message.success("New Announce added Successfully");
       setOpenNewAnnouncement(false);
-    } else {
-      setLoader(loader.filter((e) => e != "new-announce"));
+      setTrigger(trigger + 1);
     }
   };
+
+  const handleRemove = (id: string) => {
+    (async (_) => {
+      let res = await _.removeEvent(id);
+
+      if (res.success) {
+        message.success(res?.message ?? "Success");
+        setTrigger(trigger + 1);
+      }
+    })(event);
+  };
+
+  useEffect(() => {
+    (async (_) => {
+      const res = await _.getEvent({ page: 1, pageSize: 10 });
+
+      if (res?.success) {
+        setAnnouncement(res?.data?.events ?? []);
+        setTotal(res?.data?.total ?? 0);
+      }
+    })(event);
+  }, [trigger]);
 
   return (
     <>
@@ -111,14 +150,21 @@ const StaffAnnouncement: React.FC = () => {
           </Button>
         </div>
       </div>
-      <Table columns={columns} />
+      <Table
+        dataSource={announcement}
+        columns={columns}
+        rowKey={(e) => e.title}
+        pagination={{
+          total,
+        }}
+      />
 
       {/* context */}
       <StaffNewAnnouncement
         open={openNewAnnouncement}
         onSave={newAnnouncement}
         close={() => setOpenNewAnnouncement(false)}
-        isLoading={loader.includes("new-announce")}
+        isLoading={staff.loaderHas("new-annouce")}
       />
     </>
   );

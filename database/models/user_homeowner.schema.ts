@@ -14,14 +14,13 @@ const HomeOwnerSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
     },
     phone: {
       type: String,
       required: true,
     },
-    move_in_date: {
-      type: Date,
+    address: {
+      type: String,
       required: true,
     },
     type: {
@@ -29,17 +28,10 @@ const HomeOwnerSchema = new mongoose.Schema(
       required: true,
       enum: ["owner", "renter"],
     },
-    spouse_name: String,
-    spouse_number: Number,
-    monthly_due: {
-      type: Number,
-      required: true,
+    gender: {
+      type: String,
+      enum: ["male", "female"],
     },
-    annual_membership_fee: {
-      type: Number,
-      required: true,
-    },
-    profile_description: String,
   },
   {
     timestamps: false,

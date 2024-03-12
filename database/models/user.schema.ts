@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+import user_homeownerSchema from "./user_homeowner.schema";
+import user_staffSchema from "./user_staff.schema";
+import user_treasurerSchema from "./user_treasurer.schema";
 
 const UserSchema = new mongoose.Schema(
   {
@@ -17,16 +20,24 @@ const UserSchema = new mongoose.Schema(
     },
     homeownerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "HomeOwner",
+      ref: user_homeownerSchema,
     },
     staffId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Staff",
+      ref: user_staffSchema,
     },
     treasurerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Treasurer",
+      ref: user_treasurerSchema,
     },
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      required: function (this: any) {
+        return this.type === "homeowner";
+      },
+    },
+    profileLink: String,
   },
   {
     timestamps: true,

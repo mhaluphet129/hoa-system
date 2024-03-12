@@ -1,35 +1,29 @@
 import axios from "axios";
+import Cookies from "js-cookie";
+
 import { verify } from "@/assets/js";
 import { useAuthStore } from "./context";
-import Cookies from "js-cookie";
+import { ExtendedResponse, ApiGetProps, ApiPostProps } from "@/types";
 
 // TODO: re-adjust the expire token if user still accessing the api
 
 class API {
-  public async get({
+  public async get<T>({
     endpoint,
     query,
     publicRoute = false,
-  }: {
-    endpoint: string;
-    query?: Record<any, any>;
-    publicRoute?: boolean;
-  }) {
+  }: ApiGetProps): Promise<ExtendedResponse<T>> {
     const { accessToken: token } = useAuthStore.getState();
 
     if (!publicRoute) {
-      try {
-        const flag = await verify(token!, process.env.JWT_PRIVATE_KEY!);
-        if (!token && !flag && !publicRoute) throw new Error("No bearer");
-      } catch {
-        Cookies.remove("token");
-        return new Fail({
+      await this.checkToken().catch((e) => {
+        return {
+          success: false,
           code: 401,
-          response: { message: "Incorrect/No Bearer token" },
-        });
-      }
+          message: e,
+        };
+      });
     }
-
     const request = await axios.get(`/api/${endpoint}`, {
       params: query,
       headers: {
@@ -39,89 +33,68 @@ class API {
     });
 
     if (request.data.success)
-      return new Success({ code: request.data.code, response: request.data });
+      return {
+        success: true,
+        code: request.status,
+        message: request.data.message,
+        data: request.data.data,
+      };
     else
-      return new Fail({
-        code: request.data.status ?? 500,
-        response: request.data,
-      });
+      return {
+        success: false,
+        code: 500,
+        message: "There is an error in the Server.",
+      };
   }
 
-  public async post({
+  public async post<T>({
     endpoint,
     payload,
     publicRoute = false,
-  }: {
-    endpoint: string;
-    payload?: Record<any, any>;
-    publicRoute?: boolean;
-  }) {
+  }: ApiPostProps): Promise<ExtendedResponse<T>> {
     const { accessToken: token } = useAuthStore.getState();
     if (!publicRoute) {
-      try {
-        const flag = await verify(token!, process.env.JWT_PRIVATE_KEY!);
-        if (!token || !flag) throw new Error("No bearer");
-      } catch {
-        Cookies.remove("token");
-        return new Fail({
+      await this.checkToken().catch((e) => {
+        return {
+          success: false,
           code: 401,
-          response: { message: "Incorrect/No Bearer token" },
-        });
-      }
+          message: e,
+        };
+      });
     }
 
-    const { data } = await axios.post(`/api/${endpoint}`, payload, {
+    const request = await axios.post(`/api/${endpoint}`, payload, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
-    if (data.success)
-      return new Success({
-        code: data.code,
-        response: data,
-      });
+    if (request.data.success)
+      return {
+        success: true,
+        code: request.status,
+        data: request.data.data,
+      };
     else
-      return new Fail({
-        code: data.code ?? 500,
-        response: data,
-      });
+      return {
+        ...request.data,
+        success: false,
+      };
+  }
+
+  private async checkToken() {
+    const { accessToken: token } = useAuthStore.getState();
+    return new Promise<void>(async (resolve, reject) => {
+      try {
+        const flag = await verify(token!, process.env.JWT_PRIVATE_KEY!);
+        if (!token || !flag) reject("No Bearer token");
+        else resolve();
+      } catch {
+        Cookies.remove("token");
+        reject("Incorrect/No Bearer token");
+      }
+    });
   }
 }
 
-class Success {
-  public readonly code: number;
-  public readonly response: Record<any, any>;
-
-  public constructor({
-    code,
-    response,
-  }: {
-    code: number;
-    response: Record<any, any>;
-  }) {
-    this.code = code;
-    this.response = response;
-  }
-}
-
-// class Fail extends Success {}
-
-class Fail {
-  public readonly code: number;
-  public readonly response: Record<any, any>;
-
-  public constructor({
-    code,
-    response,
-  }: {
-    code: number;
-    response: Record<any, any>;
-  }) {
-    this.code = code;
-    this.response = response;
-  }
-}
-
-export { Success, Fail };
 export default API;

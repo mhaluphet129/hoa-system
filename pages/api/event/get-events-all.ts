@@ -1,10 +1,13 @@
 import dbConnect from "@/database/dbConnect";
 import Announcement from "@/database/models/announcement.schema";
-import { Response } from "@/types";
+import { ExtendedResponse, EventWithTotal } from "@/types";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
-async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
+async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ExtendedResponse<EventWithTotal>>
+) {
   await dbConnect();
   const { method } = req;
   if (method?.toLocaleUpperCase() === "GET") {
@@ -15,6 +18,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
           success: true,
           data: {
             events: doc,
+            total: 0,
           },
         })
       )
@@ -23,18 +27,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
         res.json({
           code: 500,
           success: false,
-          data: {
-            message: "Error in the server.",
-          },
+          message: "Error in the server.",
         });
       });
   } else {
     res.json({
       code: 405,
       success: false,
-      data: {
-        message: "Incorrect Request Method",
-      },
+      message: "Incorrect Request Method",
     });
   }
 }

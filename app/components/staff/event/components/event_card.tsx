@@ -1,5 +1,5 @@
 import React from "react";
-import { Card } from "antd";
+import { Card, Typography, Watermark } from "antd";
 import { EventCardProps } from "@/types";
 
 const EventCard = ({ image, title, description, id }: EventCardProps) => {
@@ -8,7 +8,18 @@ const EventCard = ({ image, title, description, id }: EventCardProps) => {
       hoverable
       style={{ width: 220 }}
       cover={
-        <img alt="example" src={image} style={{ width: 220, height: 220 }} />
+        image ? (
+          <img alt="example" src={image} style={{ width: 220, height: 220 }} />
+        ) : (
+          <Watermark content="No Image">
+            <div
+              style={{
+                width: 220,
+                height: 220,
+              }}
+            />
+          </Watermark>
+        )
       }
       styles={{
         body: {
