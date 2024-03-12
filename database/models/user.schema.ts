@@ -30,6 +30,13 @@ const UserSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: user_treasurerSchema,
     },
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      required: function (this: any) {
+        return this.type === "homeowner";
+      },
+    },
     profileLink: String,
   },
   {

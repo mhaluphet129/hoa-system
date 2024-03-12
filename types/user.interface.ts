@@ -2,13 +2,26 @@ export type UserType = "homeowner" | "staff" | "treasurer" | "bod";
 export type HomeOwnerType = "owner" | "renter";
 
 export interface User {
-  _id: string;
-  username?: string;
-  password?: string;
+  _id?: string;
+  username: string;
+  password: string;
   type?: UserType;
   homeownerId?: Homeowner;
   staffId?: Staff;
   treasurerId?: Treasurer;
+}
+
+export interface ProtectedUser {
+  _id?: string;
+  username: string;
+  type?: UserType;
+  homeownerId?: Homeowner;
+  staffId?: Staff;
+  treasurerId?: Treasurer;
+}
+
+export interface ProtectedUserWithToken extends ProtectedUser {
+  token: string;
 }
 
 export interface Homeowner {
@@ -17,13 +30,8 @@ export interface Homeowner {
   lastname: string;
   email: string;
   phone: string;
-  move_in_date: Date;
   type: HomeOwnerType;
-  spouse_name: string;
-  spouse_number: number;
-  monthly_due: number;
-  annual_membership_fee: number;
-  profile_description: string;
+  address: string;
 }
 
 export interface Staff {
@@ -34,5 +42,7 @@ export interface Staff {
 export interface Treasurer {
   account_balance: number;
 }
+
+// utils literal haha
 
 export default User;

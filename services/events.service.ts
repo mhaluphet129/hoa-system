@@ -1,5 +1,10 @@
-import ApiService, { Success } from "./api.service";
-import { Response, PaginationProps } from "@/types";
+import ApiService from "./api.service";
+import {
+  Response,
+  PaginationProps,
+  EventWithTotal,
+  ExtendedResponse,
+} from "@/types";
 import Loader from "./utils/class_loader";
 
 export class EventService extends Loader {
@@ -8,54 +13,37 @@ export class EventService extends Loader {
   public async getEvent({
     pageSize,
     page,
-  }: PaginationProps): Promise<Response> {
+  }: PaginationProps): Promise<ExtendedResponse<EventWithTotal>> {
     this.loaderPush("get-events");
-    const response = await this.instance.get({
+    const response = await this.instance.get<EventWithTotal>({
       endpoint: "/event/get-events",
       query: {
         pageSize,
         page,
       },
     });
-
-    if (response instanceof Success) {
-      this.loaderPop("get-events");
-      return {
-        code: response.code,
-        success: true,
-        data: response.response.data,
-      };
-    } else {
-      this.loaderPop("get-events");
-      return {
-        code: 500,
-        success: false,
-        data: {
-          message: response.response?.message ?? "Error in the server",
-        },
-      };
-    }
+    this.loaderPop("get-events");
+    return response;
   }
 
-  public async getEventAll(): Promise<Response> {
-    const response = await this.instance.get({
+  public async removeEvent(id: string): Promise<Response> {
+    this.loaderPush("removing-event");
+    const response = await this.instance.get<Response>({
+      endpoint: "/event/remove-event",
+      query: {
+        id,
+      },
+    });
+    this.loaderPop("removing-event");
+    return response;
+  }
+
+  public async getEventAll(): Promise<ExtendedResponse<EventWithTotal>> {
+    this.loaderPush("get-event-all");
+    const response = await this.instance.get<EventWithTotal>({
       endpoint: "/event/get-events-all",
     });
-
-    if (response instanceof Success) {
-      return {
-        code: response.code,
-        success: true,
-        data: response.response.data,
-      };
-    } else {
-      return {
-        code: 500,
-        success: false,
-        data: {
-          message: response.response?.message ?? "Error in the server",
-        },
-      };
-    }
+    this.loaderPop("get-event-all");
+    return response;
   }
 }

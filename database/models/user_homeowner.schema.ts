@@ -29,11 +29,6 @@ const HomeOwnerSchema = new mongoose.Schema(
       required: true,
       enum: ["owner", "renter"],
     },
-    status: {
-      type: String,
-      enum: ["active", "inactive"],
-      default: "active",
-    },
     gender: {
       type: String,
       enum: ["male", "female"],

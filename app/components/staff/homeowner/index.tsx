@@ -32,7 +32,13 @@ const HomeOwner = () => {
     {
       title: "Name",
       render: (_: any, row: any) =>
-        `${row?.homeownerId?.name} ${row?.homeownerId?.lastname}`,
+        row?.homeownerId ? (
+          `${row?.homeownerId?.name} ${row?.homeownerId?.lastname}`
+        ) : (
+          <Typography.Text type="secondary" italic>
+            Not Set
+          </Typography.Text>
+        ),
     },
     {
       title: "Username",
@@ -51,11 +57,10 @@ const HomeOwner = () => {
     },
     {
       title: "Status",
-      render: (_: any, row: any) =>
-        row?.homeownerId ? (
-          <Tag color={row?.homeownerId?.status == "active" ? "green" : "red"}>
-            {row?.homeownerId?.status}
-          </Tag>
+      dataIndex: "status",
+      render: (status: any) =>
+        status ? (
+          <Tag color={status == "active" ? "green" : "red"}>{status}</Tag>
         ) : (
           <Typography.Text type="secondary" italic>
             Not Set
@@ -81,14 +86,14 @@ const HomeOwner = () => {
     },
   ];
 
-  useEffect(() => {
-    (async (_) => {
-      let res = await _.getUsers("homeowner");
-      if (res.success) {
-        setUsers(res?.data?.users);
-      }
-    })(user);
-  }, [openNewHomeowner]);
+  // useEffect(() => {
+  //   (async (_) => {
+  //     let res = await _.getUsers("homeowner");
+  //     if (res.success) {
+  //       setUsers(res?.data?.users);
+  //     }
+  //   })(user);
+  // }, [openNewHomeowner]);
 
   return (
     <Spin spinning={user.loaderHas("fetch-user")}>
@@ -142,6 +147,7 @@ const HomeOwner = () => {
         style={{
           marginTop: 10,
         }}
+        rowKey={(e) => e._id}
       />
       {/* context */}
 

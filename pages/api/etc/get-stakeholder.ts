@@ -1,11 +1,14 @@
 import dbConnect from "@/database/dbConnect";
 import User from "@/database/models/user.schema";
-import { Response } from "@/types";
+import { ExtendedResponse, ProtectedUser } from "@/types";
 import mongoose from "mongoose";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
-async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
+async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ExtendedResponse<ProtectedUser>>
+) {
   await dbConnect();
 
   const { method } = req;
@@ -70,27 +73,21 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
       res.json({
         code: 200,
         success: true,
-        data: {
-          user: user[0],
-        },
+        data: user[0],
       });
     } catch (e) {
       console.log(e);
       res.json({
         code: 500,
         success: false,
-        data: {
-          message: e ?? "Error in the server.",
-        },
+        message: "Error in the server.",
       });
     }
   } else {
     res.json({
       code: 405,
       success: false,
-      data: {
-        message: "Incorrect Request Method",
-      },
+      message: "Incorrect Request Method",
     });
   }
 }

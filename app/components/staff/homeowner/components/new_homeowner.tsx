@@ -20,6 +20,15 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
   const [hoEmail, setHoEmail] = useState("");
   const [hoId, setHoId] = useState("");
 
+  const [form2Input, setForm2Input] = useState({
+    lname: "",
+    fname: "",
+    mname: "",
+    memberType: "owner",
+    number: "",
+    address: "",
+  });
+
   const nextStep = () => setStep(step + 1);
 
   const register = new RegistrationService();
@@ -51,12 +60,7 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
       );
     } else
       return (
-        <Button
-          type="primary"
-          onClick={async () => {
-            await form2.validateFields().then(() => form2.submit());
-          }}
-        >
+        <Button type="primary" onClick={handleUpdateUser}>
           Save & Close
         </Button>
       );
@@ -66,31 +70,42 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
     await user.createUser({ ...val, type: "homeowner" }).then((e) => {
       if (e.success) {
         setHoEmail(val.email);
-        setHoId(e?.data?._id);
+        if (e?.data?._id) setHoId(e?.data?._id);
+
         message.success(
           "Succesfully created initital account and emailed the credentials"
         );
         nextStep();
-      } else message.error("Error in the server");
+      } else message.error(e?.message ?? "Error in the Server");
     });
   };
 
-  const handleUpdateUser = async (val: any) => {
-    val.emai = hoEmail;
-    await register.newHomeOwner(val).then(async (e) => {
-      console.log(e);
+  const handleUpdateUser = async () => {
+    let val = {
+      lastname: form2Input.lname,
+      name: form2Input.fname,
+      type: form2Input.memberType,
+      phone: form2Input.number,
+      address: form2Input.address,
+      middlename: "",
+      email: "",
+    };
 
-      await user
-        .updateUser({ id: hoId, homeownerId: e.data?._id })
-        .then((_) => {
-          if (_.success) {
-            message.success("Succesfully updated");
-            cls();
-          } else {
-            message.error("Error in the server");
-          }
-        });
-    });
+    if (form2Input.mname != "") val.middlename = form2Input.mname;
+    val.email = hoEmail;
+    // await register.newHomeOwner(val).then(async (e) => {
+    //   console.log(e);
+    //   await user
+    //     .updateUser({ id: hoId, homeownerId: e.data?._id })
+    //     .then((_) => {
+    //       if (_.success) {
+    //         message.success("Succesfully updated");
+    //         cls();
+    //       } else {
+    //         message.error("Error in the server");
+    //       }
+    //     });
+    // });
   };
 
   const getBodyByStep = () => {
@@ -156,7 +171,7 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
           layout="vertical"
           className="MyForm"
           form={form2}
-          onFinish={handleUpdateUser}
+          // onFinish={handleUpdateUser}
         >
           <Space>
             <Form.Item
@@ -169,7 +184,11 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
                 },
               ]}
             >
-              <Input />
+              <Input
+                onChange={(e) => {
+                  setForm2Input({ ...form2Input, lname: e.target.value });
+                }}
+              />
             </Form.Item>
             <Form.Item
               label="First Name"
@@ -177,14 +196,22 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
               rules={[
                 {
                   required: true,
-                  message: "Last Name is blank.",
+                  message: "First Name is blank.",
                 },
               ]}
             >
-              <Input />
+              <Input
+                onChange={(e) => {
+                  setForm2Input({ ...form2Input, fname: e.target.value });
+                }}
+              />
             </Form.Item>
             <Form.Item label="Middle Name (Optional)" name="middlename">
-              <Input />
+              <Input
+                onChange={(e) => {
+                  setForm2Input({ ...form2Input, mname: e.target.value });
+                }}
+              />
             </Form.Item>
             <Form.Item label="Type of Member" name="type" initialValue="owner">
               <Select
@@ -198,6 +225,9 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
                     value: "renter",
                   },
                 ]}
+                onChange={(e) => {
+                  setForm2Input({ ...form2Input, memberType: e });
+                }}
               />
             </Form.Item>
           </Space>
@@ -234,7 +264,11 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
                 }),
               ]}
             >
-              <Input />
+              <Input
+                onChange={(e) => {
+                  setForm2Input({ ...form2Input, number: e.target.value });
+                }}
+              />
             </Form.Item>
             <Form.Item
               label="Home Address"
@@ -246,7 +280,11 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
                 },
               ]}
             >
-              <Input />
+              <Input
+                onChange={(e) => {
+                  setForm2Input({ ...form2Input, address: e.target.value });
+                }}
+              />
             </Form.Item>
           </Space>
         </Form>

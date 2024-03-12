@@ -24,7 +24,7 @@ const StaffCalendar = () => {
     year: new Date().getFullYear(),
     month: new Date().getMonth(),
   });
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<any>([]);
 
   const event = new EventService();
 
@@ -33,14 +33,14 @@ const StaffCalendar = () => {
       let res = await _.getEventAll();
 
       if (res.success) {
-        if (res.data?.events ?? false) {
+        if (res.data?.events && res.data?.events?.length > 0) {
           setEvents(
-            res.data?.events.map((e: any) => {
+            res.data?.events.map((e) => {
               return {
                 content: e.title,
                 range: moment.range(
-                  moment(e.createAt).clone(),
-                  moment(e.createAt).clone()
+                  moment(e.createdAt).clone(),
+                  moment(e.createdAt).clone()
                 ),
               };
             })

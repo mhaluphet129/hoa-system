@@ -15,12 +15,9 @@ export async function middleware(req: NextRequest) {
     try {
       currentUser = await verify(token, JWT_SECRET);
     } catch (e) {
-      const res = NextResponse.next();
-      res.cookies.clear();
-      return res;
+      return NextResponse.rewrite(new URL("/user/login", req.url));
     }
   }
-
   const authRoute = ["/user/login"];
 
   const protectedRoute = [
@@ -29,9 +26,12 @@ export async function middleware(req: NextRequest) {
     "/user/home-treasurer",
     "/user/home-bod",
   ];
-
-  if (protectedRoute.includes(pathname) && !currentUser) {
-    return NextResponse.redirect(new URL("/user/login", req.url));
+  if (protectedRoute.includes(pathname)) {
+    if (currentUser)
+      return NextResponse.rewrite(
+        new URL(`/user/home-${currentUser.type}`, req.url)
+      );
+    else return NextResponse.redirect(new URL("/user/login", req.url));
   }
 
   if (authRoute.includes(pathname) && currentUser) {
@@ -42,3 +42,13 @@ export async function middleware(req: NextRequest) {
 
   return NextResponse.rewrite(url);
 }
+
+export const config = {
+  matcher: [
+    "/user/login",
+    "/user/home-homeowner",
+    "/user/home-staff",
+    "/user/home-treasurer",
+    "/user/home-bod",
+  ],
+};

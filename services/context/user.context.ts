@@ -1,9 +1,9 @@
 import { create, StateCreator } from "zustand";
 import { createJSONStorage, persist, PersistOptions } from "zustand/middleware";
-import { User } from "@/types";
+import { ProtectedUser } from "@/types";
 
 type UserStore = {
-  currentUser: User | null;
+  currentUser: ProtectedUser | null;
   setUser: (user: any) => void;
   removeUser: () => void;
 };
@@ -17,7 +17,7 @@ const useUserStore = create<UserStore, []>(
   (persist as MyPersist)(
     (set, get): UserStore => ({
       currentUser: null,
-      setUser: (user: User) => set(() => ({ currentUser: user })),
+      setUser: (user: ProtectedUser) => set(() => ({ currentUser: user })),
       removeUser: () => set({ currentUser: null }),
     }),
     {
