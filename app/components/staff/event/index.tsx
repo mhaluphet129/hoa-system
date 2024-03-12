@@ -47,14 +47,14 @@ const StaffEvent: React.FC = () => {
       let res = await _.getEvent({ page, pageSize: paginationConfig.pageSize });
 
       if (res.success) {
-        if (res.data?.events ?? false) {
+        if (res.data?.events && res?.data?.events.length > 0) {
           setAnnounncement(
-            res.data?.events.map((e: any) => {
+            res.data?.events.map((e) => {
               return {
                 image: e.images[0],
                 title: e.title,
                 description: e.description,
-                id: e._id,
+                id: e._id ?? "",
               };
             })
           );
@@ -68,7 +68,8 @@ const StaffEvent: React.FC = () => {
   const newAnnouncement = async (props: AnnouncementProps) => {
     let res = await staff.newAnnouncement({
       ...props,
-      staffId: currentUser!._id,
+      images: props.image ?? [],
+      staffId: currentUser?._id ?? "",
     });
 
     if (res.success ?? false) {

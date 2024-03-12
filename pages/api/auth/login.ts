@@ -1,6 +1,6 @@
 import dbConnect from "@/database/dbConnect";
 import User from "@/database/models/user.schema";
-import { Response } from "@/types";
+import { ProtectedUserWithToken, ExtendedResponse } from "@/types";
 import { sign } from "@/assets/js";
 
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -8,7 +8,10 @@ import bcrypt from "bcryptjs";
 
 const JWT_PRIVATE_KEY = process.env.JWT_PRIVATE_KEY ?? "";
 
-async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
+async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ExtendedResponse<ProtectedUserWithToken>>
+) {
   await dbConnect();
 
   const { method } = req;
@@ -32,9 +35,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
         res.json({
           code: 200,
           success: true,
+          message: "Login Success",
           data: {
-            message: "Login Success",
-            user: validUser,
+            ...validUser,
             token: token,
           },
         });
@@ -42,25 +45,19 @@ async function handler(req: NextApiRequest, res: NextApiResponse<Response>) {
         res.json({
           code: 404,
           success: false,
-          data: {
-            message: "Invalid Password",
-          },
+          message: "Invalid Password",
         });
     } else
       res.json({
         code: 404,
         success: false,
-        data: {
-          message: "User doesn't exist",
-        },
+        message: "User doesn't exist",
       });
   } else {
     res.json({
       code: 405,
       success: false,
-      data: {
-        message: "Incorrect Request Method",
-      },
+      message: "Incorrect Request Method",
     });
   }
 }
