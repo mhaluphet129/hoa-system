@@ -19,6 +19,7 @@ export interface AnnouncementProps {
   title: string;
   description: string;
   image?: string[];
+  createdAt?: Date;
 }
 
 export interface AnnouncementControllerProps {
@@ -68,6 +69,11 @@ export interface ConcernProps {
 export interface LoginProp {
   username: string;
   password: string;
+}
+
+export interface AnnouncementDetailsProps {
+  open: boolean;
+  announcement: AnnouncementProps | null;
 }
 
 // api

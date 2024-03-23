@@ -4,17 +4,22 @@ import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
 import jason from "@/assets/json/constants.json";
-import { AnnouncementProps, Event } from "@/types";
+import { AnnouncementDetailsProps, AnnouncementProps, Event } from "@/types";
 import { StaffService, EventService } from "@/services";
 import { useUserStore } from "@/services/context/user.context";
 
 import StaffNewAnnouncement from "./components/new_announcement";
+import AnnouncementDetails from "../../announcement_details";
 
 // todo: (future) add lazy-load
 
-const StaffAnnouncement: React.FC = () => {
+const StaffAnnouncement = ({ isHo }: { isHo?: boolean }) => {
   const [openNewAnnouncement, setOpenNewAnnouncement] = useState(false);
   const [announcement, setAnnouncement] = useState<Event[]>([]);
+  const [announceOpt, setAnnouncementOpt] = useState<AnnouncementDetailsProps>({
+    open: false,
+    announcement: null,
+  });
   const [total, setTotal] = useState(0);
   const [trigger, setTrigger] = useState(0);
   const [filter, setFilter] = useState({
@@ -141,14 +146,16 @@ const StaffAnnouncement: React.FC = () => {
             />
           </Space>
         </div>
-        <div>
-          <Button
-            icon={<PlusOutlined />}
-            onClick={() => setOpenNewAnnouncement(true)}
-          >
-            Add Announcement
-          </Button>
-        </div>
+        {!isHo && (
+          <div>
+            <Button
+              icon={<PlusOutlined />}
+              onClick={() => setOpenNewAnnouncement(true)}
+            >
+              Add Announcement
+            </Button>
+          </div>
+        )}
       </div>
       <Table
         dataSource={announcement}
@@ -156,6 +163,12 @@ const StaffAnnouncement: React.FC = () => {
         rowKey={(e) => e.title}
         pagination={{
           total,
+        }}
+        onRow={(data: any) => {
+          return {
+            onClick: () =>
+              setAnnouncementOpt({ open: true, announcement: data }),
+          };
         }}
       />
 
@@ -165,6 +178,10 @@ const StaffAnnouncement: React.FC = () => {
         onSave={newAnnouncement}
         close={() => setOpenNewAnnouncement(false)}
         isLoading={staff.loaderHas("new-annouce")}
+      />
+      <AnnouncementDetails
+        {...announceOpt}
+        close={() => setAnnouncementOpt({ open: false, announcement: null })}
       />
     </>
   );
