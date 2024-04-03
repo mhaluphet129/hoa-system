@@ -25,6 +25,7 @@ export default function App({ Component, pageProps }: AppProps) {
           name="description"
           content="This system develop to help Landlords, students and OSS admin to ensure and automate booking, student monitoring and boarding house management"
         />
+        <script src="https://cdn.tailwindcss.com"></script>
       </Head>
       <Component {...pageProps} />
     </ConfigProvider>
