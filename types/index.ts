@@ -3,3 +3,4 @@ export * from "./utils.interface";
 export * from "./layout.interface";
 export * from "./announcement.interface";
 export * from "./props.types";
+export * from "./schema.interface";

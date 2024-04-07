@@ -1,3 +1,7 @@
+import {
+  NewCategoryData,
+  NewCategoryDataOptionalProps,
+} from "./schema.interface";
 import { UserType, Homeowner } from "./user.interface";
 
 export type NotificationStatus = "due" | "pending" | "completed";
@@ -76,6 +80,20 @@ export interface AnnouncementDetailsProps {
   announcement: AnnouncementProps | null;
 }
 
+export interface NewCategoryProps {
+  open: boolean;
+  close: () => void;
+  onAdd: (obj: NewCategoryData) => void;
+  onSave: (obj: NewCategoryDataOptionalProps) => void;
+  isEdit?: boolean;
+  data?: NewCategoryData | any;
+}
+
+export interface CategoryUtilProps {
+  open: boolean;
+  isEdit?: boolean;
+  data?: NewCategoryData;
+}
 // api
 export interface ApiGetProps {
   endpoint: string;

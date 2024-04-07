@@ -7,6 +7,7 @@ import { PiUsersLight, PiSealWarningLight } from "react-icons/pi";
 import { TbReceipt } from "react-icons/tb";
 import { LuCalendarRange } from "react-icons/lu";
 import { MdCalendarToday } from "react-icons/md";
+import { RxHamburgerMenu } from "react-icons/rx";
 
 import Announcement from "@/app/components/staff/announcement";
 import Event from "@/app/components/staff/event";
@@ -16,6 +17,7 @@ import Calendar from "@/app/components/staff/calendar";
 import HomeOwner from "@/app/components/staff/homeowner";
 import Dues from "@/app/components/staff/dues";
 import Dashboard from "@/app/components/staff/dashboard";
+import CollectionCategories from "@/app/components/staff/collection";
 
 const selectedItemsStyle = {
   color: "#DEE4EE",
@@ -93,6 +95,17 @@ const Staff: React.FC = () => {
                     },
             },
             {
+              label: "Collection Categories",
+              key: "collection categories",
+              icon: <RxHamburgerMenu />,
+              style:
+                selectedKey == "collection categories"
+                  ? selectedItemsStyle
+                  : {
+                      color: "#fff",
+                    },
+            },
+            {
               label: "Homeowners",
               key: "homeowner",
               icon: <PiUsersLight />,
@@ -160,6 +173,9 @@ const Staff: React.FC = () => {
             {selectedKey == "calendar" ? <Calendar /> : null}
             {selectedKey == "homeowner" ? <HomeOwner /> : null}
             {selectedKey == "due" ? <Dues /> : null}
+            {selectedKey == "collection categories" ? (
+              <CollectionCategories />
+            ) : null}
           </Content>
         </Layout>
       </Layout>
