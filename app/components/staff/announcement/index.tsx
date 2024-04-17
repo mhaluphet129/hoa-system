@@ -69,7 +69,6 @@ const StaffAnnouncement = ({ isHo }: { isHo?: boolean }) => {
   ];
 
   const newAnnouncement = async (props: AnnouncementProps) => {
-    console.log(props);
     let res = await staff.newAnnouncement({
       title: props.title,
       description: props.description,

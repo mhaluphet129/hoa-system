@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { ChangeEvent, useRef } from "react";
 import { Image, Spin, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { SelectImageProps } from "@/types";
@@ -12,7 +12,6 @@ const ImageUpload = ({
 
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
-
     if (files && files.length > 0) {
       const selected = files[0];
       if (selected.type.startsWith("image/")) {

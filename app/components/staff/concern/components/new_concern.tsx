@@ -14,19 +14,19 @@ import {
 
 import { CheckOutlined } from "@ant-design/icons";
 
-import { AnnouncementControllerProps } from "@/types";
-import ImageUpload from "./image_upload";
+import { NewConcernProps } from "@/types";
+import ImageUpload from "@/app/components/staff/announcement/components/image_upload";
 import FilestackApi from "@/assets/js/filestack";
 import { bytesToMegabytes } from "@/assets/js";
 
 const fs = new FilestackApi();
 
-const StaffNewAnnouncement = ({
+const NewConcern = ({
   open,
   onSave,
   close,
-  isLoading,
-}: AnnouncementControllerProps) => {
+  isLoading = false,
+}: NewConcernProps) => {
   const [image, setImage] = useState("");
   const [form] = Form.useForm();
   const [uploadConfig, setUploadConfig] = useState({
@@ -75,7 +75,7 @@ const StaffNewAnnouncement = ({
         let obj = {
           title,
           description,
-          images: [image],
+          image: image,
         };
         onSave(obj);
       } else onSave({ title, description });
@@ -94,7 +94,7 @@ const StaffNewAnnouncement = ({
 
   return (
     <Modal
-      title="Add Announcement"
+      title="Add Concern"
       open={open}
       onCancel={() => {
         close();
@@ -239,4 +239,4 @@ const StaffNewAnnouncement = ({
   );
 };
 
-export default StaffNewAnnouncement;
+export default NewConcern;

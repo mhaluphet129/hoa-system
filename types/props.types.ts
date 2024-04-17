@@ -1,4 +1,6 @@
 import {
+  Concern,
+  ConcernData,
   NewCategoryData,
   NewCategoryDataOptionalProps,
 } from "./schema.interface";
@@ -33,6 +35,13 @@ export interface AnnouncementControllerProps {
   isLoading?: boolean;
 }
 
+export interface NewConcernProps {
+  open: boolean;
+  onSave: (args: ConcernData) => void;
+  close: () => void;
+  isLoading?: boolean;
+}
+
 export interface EventCardProps {
   image: string;
   title: string;
@@ -55,7 +64,7 @@ export interface NotificationCardProps {
 export interface ConcernDetalsCardProps {
   open: boolean;
   close: () => void;
-  concern?: ConcernProps;
+  concern: Concern | null;
 }
 
 export interface NewHomeownerCardProps {
