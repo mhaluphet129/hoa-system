@@ -8,6 +8,7 @@ import {
   Space,
   Spin,
   Table,
+  TableProps,
   Tag,
   Tooltip,
   Typography,
@@ -25,15 +26,23 @@ import { UserService } from "@/services";
 
 import NewHomeOwner from "./components/new_homeowner";
 import { User } from "@/types";
+import HOTransacDetails from "./components/homeowner_transaction_details";
 
-const HomeOwner = () => {
+const HomeOwner = ({
+  setKey,
+  customKey,
+}: {
+  setKey: any;
+  customKey: string;
+}) => {
   const [openNewHomeowner, setOpenNewHomeowner] = useState(false);
-  const [trigger, setTrigger] = useState(0);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
+  const [trigger, setTrigger] = useState(0);
 
   const user = new UserService();
 
-  const columns = [
+  const columns: TableProps<User>["columns"] = [
     {
       title: "Name",
       render: (_: any, row: any) =>
@@ -80,12 +89,25 @@ const HomeOwner = () => {
     },
     {
       title: "Functions",
-      dataIndex: "_id",
       align: "center",
-      render: (_: any) => (
+      render: (_, user) => (
         <Space>
           <Tooltip title="View">
-            <Button icon={<EyeOutlined />} />
+            <Button
+              icon={<EyeOutlined />}
+              onClick={() => {
+                setKey(
+                  user.homeownerId
+                    ? `homeowner / ${
+                        user.homeownerId?.name +
+                        " " +
+                        user.homeownerId?.lastname
+                      }`
+                    : "homeowner / No Name"
+                );
+                setSelectedUser(user);
+              }}
+            />
           </Tooltip>
           <Tooltip title="Edit">
             <Button icon={<EditOutlined />} />
@@ -95,7 +117,7 @@ const HomeOwner = () => {
               title="Are you sure you want to delete this homeowner?"
               okText="Delete"
               okType="danger"
-              onConfirm={() => handleDelete(_)}
+              onConfirm={() => handleDelete(user?._id ?? "")}
             >
               <Button icon={<DeleteOutlined />} danger />
             </Popconfirm>
@@ -124,61 +146,73 @@ const HomeOwner = () => {
     })(user);
   }, [openNewHomeowner, trigger]);
 
+  useEffect(() => {
+    if (customKey == "homeowner") setSelectedUser(null);
+  }, [customKey]);
+
   return (
     <Spin spinning={user.loaderHas("fetch-user")}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-        }}
-      >
-        <Input
-          prefix={<SearchOutlined />}
-          style={{ width: 300 }}
-          placeholder="Search homeowner..."
+      {selectedUser ? (
+        <HOTransacDetails
+          user={selectedUser}
+          goBack={() => setKey("homeowner")}
         />
-        <Button
-          icon={<PlusOutlined />}
-          onClick={() => setOpenNewHomeowner(true)}
-        >
-          Add New Homeowner
-        </Button>
-      </div>
-      <div
-        style={{
-          marginTop: 10,
-        }}
-      >
-        <label htmlFor="status" style={{ marginRight: 5 }}>
-          Filter:{" "}
-        </label>
-        <Select
-          id="status"
-          defaultValue="active"
-          style={{ width: 90 }}
-          options={[
-            {
-              label: "Active",
-              value: "active",
-            },
-            {
-              label: "Inactive",
-              value: "inactive",
-            },
-          ]}
-        />
-      </div>
-      <Table
-        dataSource={users}
-        // @ts-ignore
-        columns={columns}
-        style={{
-          marginTop: 10,
-        }}
-        rowKey={(e) => e._id ?? "iser"}
-      />
-      {/* context */}
+      ) : (
+        <>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+            }}
+          >
+            <Input
+              prefix={<SearchOutlined />}
+              style={{ width: 300 }}
+              placeholder="Search homeowner..."
+            />
+            <Button
+              icon={<PlusOutlined />}
+              onClick={() => setOpenNewHomeowner(true)}
+            >
+              Add New Homeowner
+            </Button>
+          </div>
+          <div
+            style={{
+              marginTop: 10,
+            }}
+          >
+            <label htmlFor="status" style={{ marginRight: 5 }}>
+              Filter:{" "}
+            </label>
+            <Select
+              id="status"
+              defaultValue="active"
+              style={{ width: 90 }}
+              options={[
+                {
+                  label: "Active",
+                  value: "active",
+                },
+                {
+                  label: "Inactive",
+                  value: "inactive",
+                },
+              ]}
+            />
+          </div>
+          <Table
+            dataSource={users}
+            columns={columns}
+            style={{
+              marginTop: 10,
+            }}
+            rowKey={(e) => e._id ?? "iser"}
+          />
+        </>
+      )}
 
+      {/* context */}
       <NewHomeOwner
         open={openNewHomeowner}
         close={() => setOpenNewHomeowner(false)}

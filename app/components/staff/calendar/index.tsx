@@ -152,6 +152,9 @@ const StaffCalendar = () => {
                   value: i,
                 };
               })}
+              dropdownStyle={{
+                width: 100,
+              }}
               onChange={(e) => setFilter({ ...filter, month: parseInt(e) })}
             />
             ,
@@ -177,6 +180,7 @@ const StaffCalendar = () => {
               <Button
                 icon={<ReloadOutlined />}
                 ghost
+                size="small"
                 onClick={() =>
                   setFilter({ month: moment().month(), year: moment().year() })
                 }

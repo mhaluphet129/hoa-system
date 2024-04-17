@@ -4,6 +4,8 @@ import {
   User,
   UpdateHomeownerProps,
   Response,
+  NewHomeownerTransactionData,
+  Transaction,
 } from "@/types";
 
 import Loader from "./utils/class_loader";
@@ -53,6 +55,30 @@ export class UserService extends Loader {
       query: { id },
     });
     this.loaderPop("removing-ho");
+    return response;
+  }
+
+  public async newTransaction(
+    data: NewHomeownerTransactionData
+  ): Promise<Response> {
+    this.loaderPush("new-transaction");
+    const response = await this.instance.post<Response>({
+      endpoint: "/user/transaction",
+      payload: data,
+    });
+    this.loaderPop("new-transaction");
+    return response;
+  }
+
+  public async getTransaction(
+    userId?: string
+  ): Promise<ExtendedResponse<Transaction[]>> {
+    this.loaderPush("get-transaction");
+    const response = await this.instance.get<Transaction[]>({
+      endpoint: "/user/transaction",
+      query: { userId },
+    });
+    this.loaderPop("get-transaction");
     return response;
   }
 }

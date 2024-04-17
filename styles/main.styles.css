@@ -101,7 +101,7 @@ div.outside {
   padding-left: 15px;
   color: #fff;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
 }
 
 .custom-select-title div:first-child,
@@ -162,6 +162,10 @@ div.outside {
 
 .main-content .right-content {
   background: #ffa011;
+}
+
+.label-no-padding .ant-form-item-label {
+  padding-bottom: 0;
 }
 
 @page {

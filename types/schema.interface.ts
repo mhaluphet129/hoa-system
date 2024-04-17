@@ -5,7 +5,7 @@ export interface Category {
   _id: string;
   category: string;
   description: string;
-  fee: Number;
+  fee: number;
   status: CategoryStatus;
   createdAt: Date;
 }

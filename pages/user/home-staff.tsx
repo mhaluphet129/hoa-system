@@ -171,7 +171,9 @@ const Staff: React.FC = () => {
             {selectedKey == "concern" ? <Concern /> : null}
             {selectedKey == "notification" ? <Notification /> : null}
             {selectedKey == "calendar" ? <Calendar /> : null}
-            {selectedKey == "homeowner" ? <HomeOwner /> : null}
+            {selectedKey.startsWith("homeowner") ? (
+              <HomeOwner setKey={setSelectedKey} customKey={selectedKey} />
+            ) : null}
             {selectedKey == "due" ? <Dues /> : null}
             {selectedKey == "collection categories" ? (
               <CollectionCategories />

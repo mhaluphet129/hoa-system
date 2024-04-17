@@ -2,7 +2,7 @@ import {
   NewCategoryData,
   NewCategoryDataOptionalProps,
 } from "./schema.interface";
-import { UserType, Homeowner } from "./user.interface";
+import { UserType, Homeowner, Staff, User } from "./user.interface";
 
 export type NotificationStatus = "due" | "pending" | "completed";
 
@@ -94,6 +94,36 @@ export interface CategoryUtilProps {
   isEdit?: boolean;
   data?: NewCategoryData;
 }
+
+// export type Transaction1Type = "check" | "fund transfer";
+// export interface Transaction1Props {
+//   name: string;
+//   or: string;
+//   ar?: string;
+//   amount: Number;
+//   type: Transaction1Type;
+// }
+
+export interface NewHomeownerTransaction {
+  open: boolean;
+  close: () => void;
+  onSave: (data: NewHomeownerTransactionData) => void;
+}
+
+type PaymentType = "cash" | "cheque";
+export interface NewHomeownerTransactionData {
+  userId: string | User;
+  dateCollected: Date;
+  collectedBy: Staff;
+  paymentType: PaymentType;
+  categorySelected: string[];
+  createdAt?: Date;
+}
+export interface Transaction extends NewHomeownerTransactionData {
+  _id: string;
+  totalFee: number;
+}
+
 // api
 export interface ApiGetProps {
   endpoint: string;

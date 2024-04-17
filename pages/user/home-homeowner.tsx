@@ -3,7 +3,7 @@ import { Layout, message } from "antd";
 import { Sider, Header, Content, Footer } from "../layout";
 import { LuLayoutDashboard, LuMegaphone } from "react-icons/lu";
 import { FaRegBell } from "react-icons/fa";
-import { PiUsersLight, PiSealWarningLight } from "react-icons/pi";
+import { PiSealWarningLight } from "react-icons/pi";
 import { TbReceipt } from "react-icons/tb";
 import { LuCalendarRange } from "react-icons/lu";
 import { MdCalendarToday } from "react-icons/md";
@@ -15,6 +15,9 @@ import Notification from "@/app/components/staff/notification";
 import Calendar from "@/app/components/staff/calendar";
 import Dues from "@/app/components/staff/dues";
 import Dashboard from "@/app/components/staff/dashboard";
+import HOTransacDetails from "@/app/components/staff/homeowner/components/homeowner_transaction_details";
+
+import { useUserStore } from "@/services/context";
 
 const selectedItemsStyle = {
   color: "#DEE4EE",
@@ -25,6 +28,8 @@ const selectedItemsStyle = {
 
 const HomeOwner: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState("dashboard");
+
+  const { currentUser } = useUserStore();
 
   useEffect(() => {
     message.info({
@@ -75,6 +80,17 @@ const HomeOwner: React.FC = () => {
               icon: <FaRegBell />,
               style:
                 selectedKey == "notification"
+                  ? selectedItemsStyle
+                  : {
+                      color: "#fff",
+                    },
+            },
+            {
+              label: "List of Record",
+              key: "list-record",
+              icon: <TbReceipt />,
+              style:
+                selectedKey == "list-record"
                   ? selectedItemsStyle
                   : {
                       color: "#fff",
@@ -149,6 +165,9 @@ const HomeOwner: React.FC = () => {
             {selectedKey == "notification" ? <Notification /> : null}
             {selectedKey == "calendar" ? <Calendar /> : null}
             {selectedKey == "due" ? <Dues /> : null}
+            {selectedKey == "list-record" ? (
+              <HOTransacDetails user={currentUser!} />
+            ) : null}
           </Content>
         </Layout>
       </Layout>
