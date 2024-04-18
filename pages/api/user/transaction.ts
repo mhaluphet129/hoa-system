@@ -5,6 +5,7 @@ import {
   Response,
   Transaction as TransactionProp,
 } from "@/types";
+import mongoose from "mongoose";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -34,8 +35,15 @@ async function handler(
       });
   } else {
     const { userId } = req.query;
-
+    console.log(userId);
     return await Transaction.aggregate([
+      ...(userId
+        ? [
+            {
+              $match: { userId: new mongoose.Types.ObjectId(userId as string) },
+            },
+          ]
+        : []),
       {
         $lookup: {
           from: "users",

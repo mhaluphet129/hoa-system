@@ -1,8 +1,8 @@
 import {
+  Category,
+  CategoryData,
   Concern,
   ConcernData,
-  NewCategoryData,
-  NewCategoryDataOptionalProps,
 } from "./schema.interface";
 import { UserType, Homeowner, Staff, User } from "./user.interface";
 
@@ -92,16 +92,16 @@ export interface AnnouncementDetailsProps {
 export interface NewCategoryProps {
   open: boolean;
   close: () => void;
-  onAdd: (obj: NewCategoryData) => void;
-  onSave: (obj: NewCategoryDataOptionalProps) => void;
+  onAdd: (obj: CategoryData) => void;
+  onSave: (obj: CategoryData) => void;
   isEdit?: boolean;
-  data?: NewCategoryData | any;
+  data?: Category | any;
 }
 
 export interface CategoryUtilProps {
   open: boolean;
   isEdit?: boolean;
-  data?: NewCategoryData;
+  data?: Category;
 }
 
 // export type Transaction1Type = "check" | "fund transfer";

@@ -31,13 +31,21 @@ const Home = () => {
 
   return (
     <div className="relative min-h-screen">
-      <div className="bg-[#e7eae9] items-center flex sticky top-0">
-        <span className="text-md px-2 py-3 ml-5 mr-10 my-1 border border-black rounded-lg">
-          Logo Here
-        </span>
-        <span className="text-3xl font-bold uppercase tracking-wide">
-          Vista Verde Village Association
-        </span>
+      <div className="bg-[#e7eae9] items-center flex sticky top-0 justify-between">
+        <div className="py-1 flex align-center">
+          <span className="text-md px-2 py-3 ml-5 mr-10 my-1 border border-black rounded-lg">
+            Logo Here
+          </span>
+          <span className="text-3xl font-bold uppercase tracking-wide flex items-center">
+            Vista Verde Village Association
+          </span>
+        </div>
+        <a
+          href="/user/login"
+          className="text-2xl mr-5 hover:underline cursor-pointer"
+        >
+          LOGIN
+        </a>
       </div>
       <nav className="bg-white ml-4">
         <div className="max-w-7xl px-1 sm:px-6 lg:px-1">

@@ -3,9 +3,8 @@ import {
   Response,
   Event,
   ExtendedResponse,
-  NewCategoryData,
   Category,
-  NewCategoryDataOptionalProps,
+  CategoryData,
 } from "@/types";
 import Loader from "./utils/class_loader";
 
@@ -33,7 +32,7 @@ export class StaffService extends Loader {
     return response;
   }
 
-  public async newCategory(category: NewCategoryData): Promise<Response> {
+  public async newCategory(category: CategoryData): Promise<Response> {
     this.loaderPush("new-category");
     const response = await this.instance.post<Response>({
       endpoint: "/staff/category",
@@ -44,7 +43,8 @@ export class StaffService extends Loader {
   }
 
   public async updateCategory(
-    category: NewCategoryDataOptionalProps
+    category: CategoryData,
+    _id: string
   ): Promise<Response> {
     this.loaderPush("up-cat");
     const response = await this.instance.post<Response>({

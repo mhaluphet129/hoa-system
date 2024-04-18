@@ -16,12 +16,7 @@ import {
 } from "@ant-design/icons";
 
 import NewCategory from "./components/new_category";
-import {
-  Category,
-  CategoryUtilProps,
-  NewCategoryData,
-  NewCategoryDataOptionalProps,
-} from "@/types";
+import { Category, CategoryData, CategoryUtilProps } from "@/types";
 import dayjs from "dayjs";
 import { StaffService } from "@/services";
 
@@ -36,7 +31,7 @@ const CollectionCategories = () => {
 
   const staff = new StaffService();
 
-  const columns: TableProps<NewCategoryData>["columns"] = [
+  const columns: TableProps<Category>["columns"] = [
     { title: "Category", dataIndex: "category" },
     { title: "Description", dataIndex: "description" },
     { title: "Fixed Fee", dataIndex: "fee", render: (_) => `₱${_}` },
@@ -95,7 +90,7 @@ const CollectionCategories = () => {
     },
   ];
 
-  const handleOnAdd = (obj: NewCategoryData) => {
+  const handleOnAdd = (obj: CategoryData) => {
     (async (_) => {
       let res = await _.newCategory(obj);
       if (res?.success ?? false) {
@@ -106,9 +101,9 @@ const CollectionCategories = () => {
     })(staff);
   };
 
-  const handleOnSave = (obj: NewCategoryDataOptionalProps) => {
+  const handleOnSave = (obj: CategoryData) => {
     (async (_) => {
-      let res = await _.updateCategory(obj);
+      let res = await _.updateCategory(obj, openNewCategory.data?._id ?? "");
       if (res?.success ?? false) {
         message.success(res?.message ?? "Success");
         setOpenNewCategory({ open: false, isEdit: false, data: undefined });
