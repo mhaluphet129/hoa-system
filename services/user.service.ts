@@ -74,9 +74,9 @@ export class UserService extends Loader {
 
   public async getTransaction(
     userId?: string
-  ): Promise<ExtendedResponse<Transaction[]>> {
+  ): Promise<ExtendedResponse<[Transaction[], Transaction[]]>> {
     this.loaderPush("get-transaction");
-    const response = await this.instance.get<Transaction[]>({
+    const response = await this.instance.get<[Transaction[], Transaction[]]>({
       endpoint: "/user/transaction",
       query: { userId },
     });

@@ -32,6 +32,7 @@ async function handler(
       });
   } else {
     const { homeownerId } = req.query;
+    console.log(req.query);
     return await Concern.find(homeownerId ? { homeownerId } : {}).then((e) =>
       res.json({
         code: 200,

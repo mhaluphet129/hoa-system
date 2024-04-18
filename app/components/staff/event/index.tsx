@@ -22,7 +22,6 @@ import { EventService, StaffService } from "@/services";
 const staff = new StaffService();
 const event = new EventService();
 
-// TODO: add create announcement on empty event
 // TODO: fix no image
 
 const StaffEvent: React.FC = () => {
@@ -168,7 +167,7 @@ const StaffEvent: React.FC = () => {
           <Empty
             image="https://gw.alipayobjects.com/zos/antfincdn/ZHrcdLPrvN/empty.svg"
             imageStyle={{
-              height: 60,
+              height: 120,
             }}
             description={
               <Typography.Text type="secondary">
@@ -176,9 +175,14 @@ const StaffEvent: React.FC = () => {
               </Typography.Text>
             }
           >
-            <Button type="primary" onClick={() => setOpenNewAnnouncement(true)}>
-              Create Now
-            </Button>
+            {currentUser?.type == "staff" && (
+              <Button
+                type="primary"
+                onClick={() => setOpenNewAnnouncement(true)}
+              >
+                Create Now
+              </Button>
+            )}
           </Empty>
         )}
       </div>

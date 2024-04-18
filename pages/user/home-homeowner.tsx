@@ -33,7 +33,7 @@ const HomeOwner: React.FC = () => {
 
   useEffect(() => {
     message.info({
-      content: "Welcome Staff-01",
+      content: `Welcome ${currentUser?.homeownerId?.name} ${currentUser?.homeownerId?.lastname}`,
       icon: null,
     });
   }, []);
@@ -87,10 +87,10 @@ const HomeOwner: React.FC = () => {
             },
             {
               label: "List of Record",
-              key: "list-record",
+              key: "list of record",
               icon: <TbReceipt />,
               style:
-                selectedKey == "list-record"
+                selectedKey == "list of record"
                   ? selectedItemsStyle
                   : {
                       color: "#fff",
@@ -165,7 +165,7 @@ const HomeOwner: React.FC = () => {
             {selectedKey == "notification" ? <Notification /> : null}
             {selectedKey == "calendar" ? <Calendar /> : null}
             {selectedKey == "due" ? <Dues /> : null}
-            {selectedKey == "list-record" ? (
+            {selectedKey == "list of record" ? (
               <HOTransacDetails user={currentUser!} />
             ) : null}
           </Content>

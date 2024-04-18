@@ -8,9 +8,11 @@ import {
   Modal,
   Row,
   Select,
+  Space,
   Table,
   TableColumnsType,
   Tag,
+  Tooltip,
   Typography,
   message,
 } from "antd";
@@ -35,11 +37,13 @@ const HOTransacDetails = ({
   goBack?: () => void;
 }) => {
   const [openNewTransaction, setOpenNewTransaction] = useState(false);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [dues, setDues] = useState<Transaction[]>([]);
+  const [services, setServices] = useState<Transaction[]>([]);
+  const [trigger, setTrigger] = useState(0);
 
   const userService = new UserService();
 
-  const columns: TableColumnsType<Transaction> = [
+  const columns1: TableColumnsType<Transaction> = [
     {
       title: "Date",
       width: 100,
@@ -51,8 +55,7 @@ const HOTransacDetails = ({
       render: (_, { userId }: { userId: any }) =>
         `${userId.homeownerId?.name} ${userId.homeownerId?.lastname}`,
     },
-    { title: "OR#", width: 40 },
-    { title: "AR#", width: 40 },
+    { title: "OR#", width: 200 },
     {
       title: "Amount",
       width: 60,
@@ -66,7 +69,58 @@ const HOTransacDetails = ({
         <Tag>{paymentType == "cash" ? "Fund Transfer" : "Check"}</Tag>
       ),
     },
-    { title: "Monthly Due/Annual Due" },
+    {
+      title: "Monthly Due/Annual Due",
+      render: (_, { categorySelected }) => (
+        <Space>
+          {categorySelected.map((e: any) => (
+            <Tooltip title={e.description}>
+              <Tag>{e.category}</Tag>
+            </Tooltip>
+          ))}
+        </Space>
+      ),
+    },
+  ];
+
+  const columns2: TableColumnsType<Transaction> = [
+    {
+      title: "Date",
+      width: 100,
+      render: (_, { createdAt }) => dayjs(createdAt).format("MMM DD 'YY"),
+    },
+    {
+      title: "Name",
+      width: 200,
+      render: (_, { userId }: { userId: any }) =>
+        `${userId.homeownerId?.name} ${userId.homeownerId?.lastname}`,
+    },
+    { title: "OR#", width: 200 },
+    {
+      title: "Amount",
+      width: 60,
+      dataIndex: "totalFee",
+      render: (_) => `₱${_}`,
+    },
+    {
+      title: "Check/Fund Transfer",
+      width: 200,
+      render: (_, { paymentType }) => (
+        <Tag>{paymentType == "cash" ? "Fund Transfer" : "Check"}</Tag>
+      ),
+    },
+    {
+      title: "Service / Rental",
+      render: (_, { categorySelected }) => (
+        <Space>
+          {categorySelected.map((e: any) => (
+            <Tooltip title={e.description}>
+              <Tag>{e.category}</Tag>
+            </Tooltip>
+          ))}
+        </Space>
+      ),
+    },
   ];
 
   const handleNewTransaction = (data: any) => {
@@ -76,6 +130,7 @@ const HOTransacDetails = ({
       if (res?.success ?? false) {
         message.success(res?.message ?? "Success");
         setOpenNewTransaction(false);
+        setTrigger(trigger + 1);
       }
     })(userService);
   };
@@ -83,9 +138,12 @@ const HOTransacDetails = ({
   useEffect(() => {
     (async (_) => {
       let res = await _.getTransaction(user._id);
-      if (res?.success ?? false) setTransactions(res?.data ?? []);
+      if (res?.success ?? false) {
+        setDues(res?.data?.[0] ?? []);
+        setServices(res?.data?.[1] ?? []);
+      }
     })(userService);
-  }, []);
+  }, [trigger]);
 
   return (
     <>
@@ -110,10 +168,21 @@ const HOTransacDetails = ({
           Add New Transaction
         </Button>
       </div>
+      <Typography.Title level={4}>Dues</Typography.Title>
       <Table
         rowKey={(e) => e?._id ?? ""}
-        columns={columns}
-        dataSource={transactions}
+        columns={columns1}
+        dataSource={dues}
+        pagination={false}
+        style={{
+          marginBottom: 20,
+        }}
+      />
+      <Typography.Title level={4}>Rentals / Services</Typography.Title>
+      <Table
+        rowKey={(e) => e?._id ?? ""}
+        columns={columns2}
+        dataSource={services}
         pagination={false}
       />
 

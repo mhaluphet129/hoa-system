@@ -20,7 +20,9 @@ async function handler(
   if (method === "POST") {
     const validUser = await User.findOne({
       $or: [{ username, email: username }],
-    }).lean();
+    })
+      .populate("homeownerId staffId treasurerId")
+      .lean();
 
     if (validUser) {
       const validPassword = await bcrypt.compare(password, validUser.password);
