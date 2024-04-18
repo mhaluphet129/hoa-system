@@ -6,6 +6,10 @@ const CategorySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    type: {
+      type: String,
+      enum: ["due", "service"],
+    },
     description: {
       type: String,
       required: true,

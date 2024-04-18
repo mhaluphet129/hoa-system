@@ -25,6 +25,7 @@ const NewCategory = ({
     <Modal
       open={open}
       onCancel={clearAll}
+      afterClose={clearAll}
       title={isEdit ? "Update Category" : "Add New Category"}
       footer={null}
       closable={false}
@@ -45,6 +46,14 @@ const NewCategory = ({
           rules={[{ required: true }]}
         >
           <Input />
+        </Form.Item>
+        <Form.Item name="type" label="Type" rules={[{ required: true }]}>
+          <Select
+            options={[
+              { label: "Monthly/Yearly Due", value: "due" },
+              { label: "Service/Rental", value: "service" },
+            ]}
+          />
         </Form.Item>
         <Form.Item
           name="description"

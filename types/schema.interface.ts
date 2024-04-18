@@ -1,14 +1,15 @@
 import { Homeowner } from "./user.interface";
 
 export type CategoryStatus = "active" | "inactive";
+export type CategoryType = "due" | "service";
 
 // * Category
-
 export interface CategoryData {
   category: string;
   description: string;
   fee: number;
   status: CategoryStatus;
+  type: CategoryType;
 }
 export interface Category extends CategoryData {
   _id: string;
@@ -16,7 +17,6 @@ export interface Category extends CategoryData {
 }
 
 // * Concern
-
 export interface ConcernData {
   title: string;
   description: string;

@@ -6,6 +6,7 @@ import {
   Table,
   TableProps,
   Tooltip,
+  Typography,
   message,
 } from "antd";
 import {
@@ -33,6 +34,19 @@ const CollectionCategories = () => {
 
   const columns: TableProps<Category>["columns"] = [
     { title: "Category", dataIndex: "category" },
+    {
+      title: "Type",
+      render: (_, { type }) =>
+        type == "due" ? (
+          "Monthly/Yearly Due"
+        ) : type == "service" ? (
+          "Service/Rental"
+        ) : (
+          <Typography.Text type="secondary" italic>
+            N/A
+          </Typography.Text>
+        ),
+    },
     { title: "Description", dataIndex: "description" },
     { title: "Fixed Fee", dataIndex: "fee", render: (_) => `₱${_}` },
     {
@@ -63,9 +77,9 @@ const CollectionCategories = () => {
       align: "center",
       render: (_, row) => (
         <Space>
-          <Tooltip title="View">
+          {/* <Tooltip title="View">
             <Button icon={<EyeOutlined />} />
-          </Tooltip>
+          </Tooltip> */}
           <Tooltip title="Edit">
             <Button
               icon={<EditOutlined />}
