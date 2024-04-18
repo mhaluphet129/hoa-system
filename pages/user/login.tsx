@@ -113,6 +113,7 @@ const Login = ({ private_key }: { private_key: string }) => {
 
   return (
     <div
+      className="login-container"
       style={{
         minHeight: "100vh",
         display: "flex",
@@ -122,7 +123,7 @@ const Login = ({ private_key }: { private_key: string }) => {
     >
       <Card
         style={{
-          width: "60vw",
+          width: "30vw",
           minHeight: "50vh",
           display: "flex",
           justifyContent: "center",
@@ -130,9 +131,7 @@ const Login = ({ private_key }: { private_key: string }) => {
         }}
         hoverable
       >
-        <span
-          style={{ fontFamily: "abel", fontSize: "1.8em", color: "#212B36" }}
-        >
+        <span style={{ fontFamily: "abel", fontSize: "2em", color: "#212B36" }}>
           Sign In to Vista Verde Village
         </span>
         {error.isError && (
@@ -153,7 +152,7 @@ const Login = ({ private_key }: { private_key: string }) => {
           onFinish={login}
         >
           <Form.Item
-            label="Email/Username"
+            label="Email / Username"
             name="username"
             style={{ marginBottom: 10 }}
           >

@@ -16,7 +16,7 @@ export default function App({ Component, pageProps }: AppProps) {
       }}
     >
       <Head>
-        <link rel="shortcut icon" href="/favicon.png" />
+        <link rel="shortcut icon" href="/web-logo.jpg" />
         <title>
           VVVHOA Portal: A Web-Based Application for Vista Verde Village
           Homeowners Association Online Portal

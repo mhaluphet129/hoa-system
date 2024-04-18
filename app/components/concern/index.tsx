@@ -160,9 +160,14 @@ const Concern = () => {
             />
           </Space>
         </div>
-        <Button icon={<PlusOutlined />} onClick={() => setOpenNewConcern(true)}>
-          Add Concern
-        </Button>
+        {currentUser?.type == "homeowner" && (
+          <Button
+            icon={<PlusOutlined />}
+            onClick={() => setOpenNewConcern(true)}
+          >
+            Add Concern
+          </Button>
+        )}
       </div>
       <Table columns={columns} dataSource={concerns} pagination={false} />
       {/* context */}

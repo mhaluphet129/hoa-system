@@ -33,9 +33,9 @@ const Home = () => {
     <div className="relative min-h-screen">
       <div className="bg-[#e7eae9] items-center flex sticky top-0 justify-between">
         <div className="py-1 flex align-center">
-          <span className="text-md px-2 py-3 ml-5 mr-10 my-1 border border-black rounded-lg">
-            Logo Here
-          </span>
+          <a href="/" className="text-md ml-5 mr-5 my-1 rounded-lg">
+            <img src="/logo.jpg" width={100} />
+          </a>
           <span className="text-3xl font-bold uppercase tracking-wide flex items-center">
             Vista Verde Village Association
           </span>
@@ -105,12 +105,13 @@ const Home = () => {
       {/* END OF CONTENT */}
 
       <div className="absolute bottom-0 h-16 min-w-full bg-[#495057] flex justify-between items-center">
-        <span className="text-md text-white px-2 py-3 ml-5 mr-10 my-1 border border-white rounded-lg">
-          Another Logo Here
-        </span>
+        <span></span>
         <div className="flex flex-col">
           <span className="tracking-wide text-white mr-1 uppercase">
-            @ 2024 All Rights Reserved
+            @2024 All Rights Reserved{" "}
+            <span className="font-black hover:underline">
+              Vista Verde Village HOA
+            </span>
           </span>
           {/* <span className="text-white ml-5">This website is made with ❤️</span>  */}
         </div>
