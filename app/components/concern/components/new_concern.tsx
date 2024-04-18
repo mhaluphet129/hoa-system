@@ -15,7 +15,7 @@ import {
 import { CheckOutlined } from "@ant-design/icons";
 
 import { NewConcernProps } from "@/types";
-import ImageUpload from "@/app/components/staff/announcement/components/image_upload";
+import ImageUpload from "@/app/components/announcement/components/image_upload";
 import FilestackApi from "@/assets/js/filestack";
 import { bytesToMegabytes } from "@/assets/js";
 

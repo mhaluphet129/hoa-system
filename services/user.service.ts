@@ -60,6 +60,16 @@ export class UserService extends Loader {
     return response;
   }
 
+  public async removeStaff(id: string): Promise<Response> {
+    this.loaderPush("removing-ho");
+    const response = await this.instance.get<Response>({
+      endpoint: "/staff/remove-staff",
+      query: { id },
+    });
+    this.loaderPop("removing-ho");
+    return response;
+  }
+
   public async newTransaction(
     data: NewHomeownerTransactionData
   ): Promise<Response> {

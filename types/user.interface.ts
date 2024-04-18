@@ -1,5 +1,6 @@
 export type UserType = "homeowner" | "staff" | "treasurer" | "bod";
 export type HomeOwnerType = "owner" | "renter";
+export type UserStatus = "active" | "inactive";
 
 export interface User {
   _id?: string;
@@ -9,6 +10,7 @@ export interface User {
   homeownerId?: Homeowner;
   staffId?: Staff;
   treasurerId?: Treasurer;
+  status?: UserStatus;
 }
 
 export interface ProtectedUser {
@@ -40,7 +42,8 @@ export interface Homeowner {
 export interface Staff {
   _id?: string;
   name: string;
-  role: string;
+  phone?: string;
+  role?: string;
 }
 
 export interface Treasurer {
@@ -50,5 +53,6 @@ export interface Treasurer {
 // utils literal haha
 export interface UpdateHomeownerProps {
   id: string;
-  homeownerId: string;
+  homeownerId?: string;
+  staffId?: string;
 }

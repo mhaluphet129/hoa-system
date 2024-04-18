@@ -9,7 +9,7 @@ import { StaffService, EventService } from "@/services";
 import { useUserStore } from "@/services/context/user.context";
 
 import StaffNewAnnouncement from "./components/new_announcement";
-import AnnouncementDetails from "../../announcement_details";
+import AnnouncementDetails from "../announcement_details";
 
 // todo: (future) add lazy-load
 

@@ -72,6 +72,12 @@ export interface NewHomeownerCardProps {
   close: () => void;
 }
 
+export interface NewStaffCardProps {
+  open: boolean;
+  close: () => void;
+  refresh: () => void;
+}
+
 export interface ConcernProps {
   title: string;
   description: string;

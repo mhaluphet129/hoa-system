@@ -9,15 +9,16 @@ import { LuCalendarRange } from "react-icons/lu";
 import { MdCalendarToday } from "react-icons/md";
 import { RxHamburgerMenu } from "react-icons/rx";
 
-import Announcement from "@/app/components/staff/announcement";
-import Event from "@/app/components/staff/event";
-import Concern from "@/app/components/staff/concern";
-import Notification from "@/app/components/staff/notification";
-import Calendar from "@/app/components/staff/calendar";
-import HomeOwner from "@/app/components/staff/homeowner";
-import Dues from "@/app/components/staff/dues";
-import Dashboard from "@/app/components/staff/dashboard";
-import CollectionCategories from "@/app/components/staff/collection";
+import Announcement from "@/app/components/announcement";
+import Event from "@/app/components/event";
+import Concern from "@/app/components/concern";
+import Notification from "@/app/components/notification";
+import Calendar from "@/app/components/calendar";
+import HomeOwner from "@/app/components/homeowner";
+import Dues from "@/app/components/dues";
+import Dashboard from "@/app/components/dashboard";
+import CollectionCategories from "@/app/components/collection";
+import { useUserStore } from "@/services/context";
 
 const selectedItemsStyle = {
   color: "#DEE4EE",
@@ -29,9 +30,11 @@ const selectedItemsStyle = {
 const Staff: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState("dashboard");
 
+  const { currentUser } = useUserStore();
+
   useEffect(() => {
     message.info({
-      content: "Welcome Staff-01",
+      content: `Welcome ${currentUser?.staffId?.name}`,
       icon: null,
     });
   }, []);

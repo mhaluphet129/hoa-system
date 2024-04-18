@@ -1,4 +1,4 @@
-import { ExtendedResponse, Homeowner } from "@/types";
+import { ExtendedResponse, Homeowner, Staff } from "@/types";
 import ApiService from "./api.service";
 import Loader from "./utils/class_loader";
 
@@ -11,6 +11,16 @@ export class RegistrationService extends Loader {
     this.loaderPush("register");
     const response = await this.instance.post<Homeowner>({
       endpoint: "/homeowner/register",
+      payload: user,
+    });
+    this.loaderPop("register");
+    return response;
+  }
+
+  public async newStaff(user: Staff): Promise<ExtendedResponse<Staff>> {
+    this.loaderPush("register");
+    const response = await this.instance.post<Staff>({
+      endpoint: "/staff/register",
       payload: user,
     });
     this.loaderPop("register");
