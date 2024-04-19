@@ -42,11 +42,11 @@ const AnnouncementDetails = ({
         {announcement?.description}
       </Typography.Paragraph>
 
-      {announcement?.image && announcement.image.length > 0 && (
+      {announcement?.images && announcement.images.length > 0 && (
         <div style={{ marginTop: 20 }}>
           <Image.PreviewGroup>
             <Space>
-              {announcement.image.map((e) => (
+              {announcement.images.map((e) => (
                 <Image src={e} height={500} />
               ))}
             </Space>

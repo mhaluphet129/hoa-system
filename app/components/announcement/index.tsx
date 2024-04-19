@@ -48,7 +48,7 @@ const StaffAnnouncement = ({ isHo }: { isHo?: boolean }) => {
     {
       title: "Created By",
       dataIndex: "staffId",
-      render: (_: any) => _.name,
+      render: (_: any) => (_ ? _.staffId?.name : "N/A"),
     },
     {
       title: "Action",
@@ -73,7 +73,7 @@ const StaffAnnouncement = ({ isHo }: { isHo?: boolean }) => {
       title: props.title,
       description: props.description,
       staffId: currentUser?._id ?? "",
-      images: props?.image ?? [],
+      images: props?.images ?? [],
     });
 
     if (res.success ?? false) {

@@ -157,7 +157,6 @@ const StaffCalendar = () => {
               }}
               onChange={(e) => setFilter({ ...filter, month: parseInt(e) })}
             />
-            ,
             <Select
               value={moment().year(filter.year).format("YYYY")}
               className="custom-select-title"

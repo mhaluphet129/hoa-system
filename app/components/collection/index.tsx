@@ -34,6 +34,7 @@ const CollectionCategories = () => {
 
   const columns: TableProps<Category>["columns"] = [
     { title: "Category", dataIndex: "category" },
+    { title: "Description", dataIndex: "description" },
     {
       title: "Type",
       render: (_, { type }) =>
@@ -47,7 +48,6 @@ const CollectionCategories = () => {
           </Typography.Text>
         ),
     },
-    { title: "Description", dataIndex: "description" },
     { title: "Fixed Fee", dataIndex: "fee", render: (_) => `₱${_}` },
     {
       title: "Status",

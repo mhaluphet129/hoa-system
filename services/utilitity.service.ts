@@ -3,6 +3,7 @@ import {
   ExtendedResponse,
   CheckStakeholderProps,
   ProtectedUser,
+  DashboardData,
 } from "@/types";
 import Loader from "./utils/class_loader";
 
@@ -34,6 +35,15 @@ export class UtilService extends Loader {
       },
     });
     this.loaderPop("getting-stakeholder");
+    return response;
+  }
+
+  public async getDashboardData(): Promise<ExtendedResponse<DashboardData>> {
+    this.loaderPush("getting-dashboardata");
+    let response = await this.instance.get<DashboardData>({
+      endpoint: "/dashboard",
+    });
+    this.loaderPop("getting-dashboardata");
     return response;
   }
 }

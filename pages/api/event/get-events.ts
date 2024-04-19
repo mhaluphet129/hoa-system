@@ -18,7 +18,12 @@ async function handler(
     return await Announcement.find()
       .skip(_page * Number.parseInt(pageSize!.toString()))
       .limit(Number.parseInt(pageSize!.toString()))
-      .populate("staffId")
+      .populate({
+        path: "staffId",
+        populate: {
+          path: "staffId",
+        },
+      })
       .then((doc) =>
         res.json({
           code: 200,

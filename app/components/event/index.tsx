@@ -67,7 +67,7 @@ const StaffEvent: React.FC = () => {
   const newAnnouncement = async (props: AnnouncementProps) => {
     let res = await staff.newAnnouncement({
       ...props,
-      images: props.image ?? [],
+      images: props.images ?? [],
       staffId: currentUser?._id ?? "",
     });
 
@@ -175,7 +175,7 @@ const StaffEvent: React.FC = () => {
               </Typography.Text>
             }
           >
-            {currentUser?.type == "staff" && (
+            {["staff", "treasurer"].includes(currentUser?.type ?? "") && (
               <Button
                 type="primary"
                 onClick={() => setOpenNewAnnouncement(true)}

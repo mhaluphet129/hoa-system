@@ -9,6 +9,7 @@ import {
   Divider,
   Select,
   message,
+  Typography,
 } from "antd";
 import { MailOutlined } from "@ant-design/icons";
 import bcrypt from "bcryptjs";
@@ -206,7 +207,9 @@ const NewHomeOwner = ({ open, close, refresh }: NewStaffCardProps) => {
 
   return (
     <Modal
-      title="New Staff Registration"
+      title={
+        <Typography.Title level={2}>New Staff Registration</Typography.Title>
+      }
       open={open}
       width={900}
       onCancel={cls}

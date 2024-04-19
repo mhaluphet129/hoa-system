@@ -28,3 +28,13 @@ export interface Concern extends ConcernData {
   _id: string;
   createdAt: Date;
 }
+
+// * Dashboard Data
+export interface HomeownerColumn {
+  name: string | null;
+  lastname: string | null;
+  status: boolean;
+}
+export interface DashboardData {
+  homeowners: HomeownerColumn[];
+}

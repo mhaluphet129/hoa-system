@@ -24,7 +24,7 @@ export interface NewUserProps {
 export interface AnnouncementProps {
   title: string;
   description: string;
-  image?: string[];
+  images?: string[];
   createdAt?: Date;
 }
 
