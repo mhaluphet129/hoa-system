@@ -207,7 +207,23 @@ const HomeOwner = ({
             style={{
               marginTop: 10,
             }}
-            rowKey={(e) => e._id ?? "iser"}
+            rowKey={(e) => e._id ?? "user"}
+            onRow={(data) => {
+              return {
+                onClick: () => {
+                  setKey(
+                    data.homeownerId
+                      ? `homeowner / ${
+                          data.homeownerId?.name +
+                          " " +
+                          data.homeownerId?.lastname
+                        }`
+                      : "homeowner / No Name"
+                  );
+                  setSelectedUser(data);
+                },
+              };
+            }}
           />
         </>
       )}

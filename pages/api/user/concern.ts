@@ -32,14 +32,16 @@ async function handler(
       });
   } else {
     const { homeownerId } = req.query;
-    console.log(req.query);
-    return await Concern.find(homeownerId ? { homeownerId } : {}).then((e) =>
-      res.json({
-        code: 200,
-        success: true,
-        data: e,
-      })
-    );
+
+    return await Concern.find(homeownerId ? { homeownerId } : {})
+      .populate("homeownerId")
+      .then((e) =>
+        res.json({
+          code: 200,
+          success: true,
+          data: e as any,
+        })
+      );
   }
 }
 

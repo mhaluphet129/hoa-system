@@ -42,13 +42,6 @@ export interface NewConcernProps {
   isLoading?: boolean;
 }
 
-export interface EventCardProps {
-  image: string;
-  title: string;
-  description: string;
-  id: string;
-}
-
 export interface PaginationProps {
   pageSize: number;
   page: number;

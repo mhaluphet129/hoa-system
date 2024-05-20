@@ -57,8 +57,8 @@ const Concern = () => {
     {
       title: "Status",
       render: (_: any, row: any) => (
-        <Tag color={row.status == "solve" ? "success" : "error"}>
-          {row.status == "solve" ? "Solved" : "Unsolved"}
+        <Tag color={row.resolved == "solve" ? "success" : "error"}>
+          {row.resolved == "solve" ? "Solved" : "Unsolved"}
         </Tag>
       ),
     },
@@ -116,7 +116,6 @@ const Concern = () => {
   useEffect(() => {
     (async (_) => {
       let res = await _.getConcerns(currentUser?.homeownerId?._id);
-
       if (res?.success ?? false) setConcerns(res?.data ?? []);
     })(userService);
   }, [trigger]);
@@ -169,7 +168,16 @@ const Concern = () => {
           </Button>
         )}
       </div>
-      <Table columns={columns} dataSource={concerns} pagination={false} />
+      <Table
+        columns={columns}
+        dataSource={concerns}
+        pagination={false}
+        onRow={(data) => {
+          return {
+            onClick: () => setConcernConfig({ open: true, concern: data }),
+          };
+        }}
+      />
       {/* context */}
       <NewConcern
         open={openNewConcern}

@@ -32,6 +32,14 @@ const HomeOwnerSchema = new mongoose.Schema(
       type: String,
       enum: ["male", "female"],
     },
+    monthlyDueDate: {
+      type: Date,
+      required: true,
+    },
+    yearlyDueDate: {
+      type: Date,
+      required: true,
+    },
   },
   {
     timestamps: false,

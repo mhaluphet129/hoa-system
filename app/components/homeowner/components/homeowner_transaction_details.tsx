@@ -43,6 +43,8 @@ const HOTransacDetails = ({
 
   const userService = new UserService();
 
+  const { currentUser } = useUserStore();
+
   const columns1: TableColumnsType<Transaction> = [
     {
       title: "Date",
@@ -156,17 +158,19 @@ const HOTransacDetails = ({
         }}
       >
         {goBack ? (
-          <div style={{ cursor: "pointer" }} onClick={goBack}>
-            <LeftOutlined /> Back
-          </div>
+          <Button onClick={goBack} size="large" icon={<LeftOutlined />}>
+            Back
+          </Button>
         ) : null}
 
-        <Button
-          icon={<PlusOutlined />}
-          onClick={() => setOpenNewTransaction(true)}
-        >
-          Add New Transaction
-        </Button>
+        {currentUser?.type != "homeowner" && (
+          <Button
+            icon={<PlusOutlined />}
+            onClick={() => setOpenNewTransaction(true)}
+          >
+            Add New Transaction
+          </Button>
+        )}
       </div>
       <Typography.Title level={4}>Dues</Typography.Title>
       <Table

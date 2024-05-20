@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
+import "@/database/models/user_homeowner.schema";
 
 const ConcernSchema = new mongoose.Schema(
   {
     homeownerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "homeowners",
+      ref: "HomeOwner",
     },
     title: {
       type: String,
@@ -13,6 +14,10 @@ const ConcernSchema = new mongoose.Schema(
     description: {
       type: String,
       required: true,
+    },
+    resolved: {
+      type: Boolean,
+      default: false,
     },
     image: String,
   },

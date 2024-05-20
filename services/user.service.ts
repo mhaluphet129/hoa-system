@@ -38,7 +38,7 @@ export class UserService extends Loader {
     return response;
   }
 
-  public async getUsers(type: string): Promise<ExtendedResponse<User[]>> {
+  public async getUsers(type?: string): Promise<ExtendedResponse<User[]>> {
     this.loaderPush("fetch-user");
     const response = await this.instance.get<User[]>({
       endpoint: "/user/get-users",
@@ -112,6 +112,18 @@ export class UserService extends Loader {
     const response = await this.instance.get<Concern[]>({
       endpoint: "/user/concern",
       query: { homeownerId },
+    });
+    this.loaderPop("get-concerns");
+    return response;
+  }
+
+  public async resolveConcern(
+    id: string
+  ): Promise<ExtendedResponse<Concern[]>> {
+    this.loaderPush("get-concerns");
+    const response = await this.instance.get<Concern[]>({
+      endpoint: "/user/resolve-concern",
+      query: { id },
     });
     this.loaderPop("get-concerns");
     return response;

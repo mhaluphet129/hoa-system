@@ -186,7 +186,7 @@ const Staff = () => {
             style={{
               marginTop: 10,
             }}
-            rowKey={(e) => e._id ?? "iser"}
+            rowKey={(e) => e._id ?? "user"}
           />
         </>
       )}

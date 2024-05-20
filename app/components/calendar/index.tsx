@@ -14,10 +14,11 @@ import { Space } from "antd";
 
 import { EventService } from "@/services";
 import jason from "@/assets/json/constants.json";
+import AnnouncementDetails from "../announcement_details";
+import { AnnouncementDetailsProps, Event } from "@/types";
 
 // TODO: onclick open announcement details
 // TODO: add "+(number of rest) on more than 3 announcement per day"
-// TODO: add calendar header
 
 const StaffCalendar = () => {
   const [filter, setFilter] = useState({
@@ -25,8 +26,21 @@ const StaffCalendar = () => {
     month: new Date().getMonth(),
   });
   const [events, setEvents] = useState<any>([]);
+  const [eventsPure, setEventsPure] = useState<Event[]>([]);
+  const [announceOpt, setAnnouncementOpt] = useState<AnnouncementDetailsProps>({
+    open: false,
+    announcement: null,
+  });
 
   const event = new EventService();
+
+  const openEventDetails = (id: string) => {
+    let _ = eventsPure.filter((e) => e._id == id);
+
+    if (_.length > 0) {
+      setAnnouncementOpt({ open: true, announcement: _[0] });
+    }
+  };
 
   useEffect(() => {
     (async (_) => {
@@ -34,9 +48,11 @@ const StaffCalendar = () => {
 
       if (res.success) {
         if (res.data?.events && res.data?.events?.length > 0) {
+          setEventsPure(res.data.events);
           setEvents(
             res.data?.events.map((e) => {
               return {
+                id: e._id,
                 content: e.title,
                 range: moment.range(
                   moment(e.createdAt).clone(),
@@ -51,180 +67,150 @@ const StaffCalendar = () => {
   }, []);
 
   return (
-    <Space
-      direction="vertical"
-      style={{
-        display: "block",
-      }}
-    >
-      {/* <Space
+    <>
+      <Space
+        direction="vertical"
         style={{
-          marginBottom: 10,
-        }}
-        wrap
-      >
-        <Select
-          defaultValue={filter.year}
-          value={filter.year}
-          style={{ width: 120 }}
-          onChange={(e) => setFilter({ ...filter, year: e })}
-          options={Array(100)
-            .fill(0)
-            .map((_, i) => {
-              return {
-                label: new Date().getFullYear() - i,
-                value: new Date().getFullYear() - i,
-              };
-            })}
-          placeholder="Year"
-        />
-        <Select
-          defaultValue={filter.month}
-          value={filter.month}
-          style={{ width: 120 }}
-          onChange={(e) => setFilter({ ...filter, month: e })}
-          options={jason.months.map((_, i) => {
-            return {
-              label: _,
-              value: i,
-            };
-          })}
-          placeholder="Month"
-        />
-        <Button
-          onClick={(e) =>
-            setFilter({ year: moment().year(), month: moment().month() })
-          }
-        >
-          Reset
-        </Button>
-      </Space> */}
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-evenly",
+          display: "block",
         }}
       >
         <div
-          className="month-controller"
           style={{
-            height: "80vh",
             display: "flex",
-            alignItems: "center",
-            cursor: "pointer",
-          }}
-          onClick={() => {
-            let { year, month } = filter;
-
-            if (month <= 0) {
-              month = 11;
-              year--;
-            } else month--;
-
-            setFilter({ month, year });
+            justifyContent: "space-evenly",
           }}
         >
-          <Button
-            icon={<LeftOutlined />}
-            shape="round"
-            className="prev-month"
+          <div
+            className="month-controller"
             style={{
-              height: 50,
-              width: 50,
+              height: "80vh",
+              display: "flex",
+              alignItems: "center",
+              cursor: "pointer",
             }}
-          />
-        </div>
+            onClick={() => {
+              let { year, month } = filter;
 
-        <div
-          style={{
-            width: 900,
-          }}
-        >
-          <div className="calendar-header">
-            <Select
-              value={moment().month(filter.month).format("MMMM")}
-              className="custom-select-title"
-              suffixIcon={null}
-              options={jason.months.map((e, i) => {
-                return {
-                  label: e,
-                  value: i,
-                };
-              })}
-              dropdownStyle={{
-                width: 100,
-              }}
-              onChange={(e) => setFilter({ ...filter, month: parseInt(e) })}
-            />
-            <Select
-              value={moment().year(filter.year).format("YYYY")}
-              className="custom-select-title"
-              suffixIcon={null}
+              if (month <= 0) {
+                month = 11;
+                year--;
+              } else month--;
+
+              setFilter({ month, year });
+            }}
+          >
+            <Button
+              icon={<LeftOutlined />}
+              shape="round"
+              className="prev-month"
               style={{
-                marginRight: 5,
-                marginLeft: 5,
+                height: 50,
+                width: 50,
               }}
-              options={Array(moment().year() - 1999)
-                .fill(0)
-                .map((_, e) => {
-                  return {
-                    label: 2000 + +e,
-                    value: 2000 + +e,
-                  };
-                })}
-              onChange={(e) => setFilter({ ...filter, year: parseInt(e) })}
             />
-            <Tooltip title="Reset">
-              <Button
-                icon={<ReloadOutlined />}
-                ghost
-                size="small"
-                onClick={() =>
-                  setFilter({ month: moment().month(), year: moment().year() })
-                }
-              />
-            </Tooltip>
           </div>
 
-          <Dayz
-            display="month"
-            date={moment().year(filter.year).month(filter.month)}
-            events={new Dayz.EventsCollection(events)}
-            onEventClick={(_: any, e: any) => console.log(e)}
-          />
-        </div>
-        <div
-          className="month-controller"
-          style={{
-            height: "80vh",
-            display: "flex",
-            alignItems: "center",
-            cursor: "pointer",
-          }}
-          onClick={() => {
-            let { year, month } = filter;
-
-            if (month >= 11) {
-              month = 0;
-              year++;
-            } else month++;
-
-            setFilter({ month, year });
-          }}
-        >
-          <Button
-            icon={<RightOutlined />}
-            shape="round"
-            className="next-month"
+          <div
             style={{
-              height: 50,
-              width: 50,
+              width: 900,
             }}
-          />
+          >
+            <div className="calendar-header">
+              <Select
+                value={moment().month(filter.month).format("MMMM")}
+                className="custom-select-title"
+                suffixIcon={null}
+                options={jason.months.map((e, i) => {
+                  return {
+                    label: e,
+                    value: i,
+                  };
+                })}
+                dropdownStyle={{
+                  width: 100,
+                }}
+                onChange={(e) => setFilter({ ...filter, month: parseInt(e) })}
+              />
+              <Select
+                value={moment().year(filter.year).format("YYYY")}
+                className="custom-select-title"
+                suffixIcon={null}
+                style={{
+                  marginRight: 5,
+                  marginLeft: 5,
+                }}
+                options={Array(moment().year() - 1999)
+                  .fill(0)
+                  .map((_, e) => {
+                    return {
+                      label: 2000 + +e,
+                      value: 2000 + +e,
+                    };
+                  })}
+                onChange={(e) => setFilter({ ...filter, year: parseInt(e) })}
+              />
+              <Tooltip title="Reset">
+                <Button
+                  icon={<ReloadOutlined />}
+                  ghost
+                  size="small"
+                  onClick={() =>
+                    setFilter({
+                      month: moment().month(),
+                      year: moment().year(),
+                    })
+                  }
+                />
+              </Tooltip>
+            </div>
+
+            <Dayz
+              display="month"
+              date={moment().year(filter.year).month(filter.month)}
+              events={new Dayz.EventsCollection(events)}
+              onEventClick={(_: any, e: any) =>
+                openEventDetails(e.attributes.id)
+              }
+            />
+          </div>
+          <div
+            className="month-controller"
+            style={{
+              height: "80vh",
+              display: "flex",
+              alignItems: "center",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              let { year, month } = filter;
+
+              if (month >= 11) {
+                month = 0;
+                year++;
+              } else month++;
+
+              setFilter({ month, year });
+            }}
+          >
+            <Button
+              icon={<RightOutlined />}
+              shape="round"
+              className="next-month"
+              style={{
+                height: 50,
+                width: 50,
+              }}
+            />
+          </div>
         </div>
-      </div>
-    </Space>
+      </Space>
+
+      {/* context */}
+      <AnnouncementDetails
+        {...announceOpt}
+        close={() => setAnnouncementOpt({ open: false, announcement: null })}
+      />
+    </>
   );
 };
 

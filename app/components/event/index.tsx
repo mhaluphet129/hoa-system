@@ -9,7 +9,7 @@ import {
   message,
 } from "antd";
 
-import { EventCardProps, PaginationProps, AnnouncementProps } from "@/types";
+import { PaginationProps, AnnouncementProps, Event } from "@/types";
 
 import { useUserStore } from "@/services/context";
 
@@ -22,10 +22,8 @@ import { EventService, StaffService } from "@/services";
 const staff = new StaffService();
 const event = new EventService();
 
-// TODO: fix no image
-
 const StaffEvent: React.FC = () => {
-  const [announcement, setAnnounncement] = useState<EventCardProps[]>([]);
+  const [announcement, setAnnounncement] = useState<Event[]>([]);
   const [openNewAnnouncement, setOpenNewAnnouncement] = useState(false);
   const [trigger, setTrigger] = useState(0);
 
@@ -47,16 +45,7 @@ const StaffEvent: React.FC = () => {
 
       if (res.success) {
         if (res.data?.events && res?.data?.events.length > 0) {
-          setAnnounncement(
-            res.data?.events.map((e) => {
-              return {
-                image: e.images[0],
-                title: e.title,
-                description: e.description,
-                id: e._id ?? "",
-              };
-            })
-          );
+          setAnnounncement(res.data?.events);
 
           setPaginationConfig({ ...paginationConfig, total: res.data?.total });
         }
@@ -141,15 +130,7 @@ const StaffEvent: React.FC = () => {
                 .map((e, i) => (
                   <EventCardShimmer key={`event-card-shimmer-${i}`} />
                 ))
-            : announcement.map((e, i) => (
-                <EventCard
-                  image={e.image}
-                  title={e.title}
-                  description={e.description}
-                  id={e.id}
-                  key={`event-card-${i}`}
-                />
-              ))}
+            : announcement.map((e, i) => <EventCard {...e} />)}
         </Space>
         {announcement.length > 0 ? (
           <Pagination

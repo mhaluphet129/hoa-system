@@ -12,12 +12,18 @@ async function handler(
   const { method } = req;
   if (method?.toLocaleUpperCase() === "GET") {
     return await Announcement.find()
+      .populate({
+        path: "staffId",
+        populate: {
+          path: "staffId",
+        },
+      })
       .then((doc) =>
         res.json({
           code: 200,
           success: true,
           data: {
-            events: doc,
+            events: doc as any,
             total: 0,
           },
         })

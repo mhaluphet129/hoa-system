@@ -9,6 +9,9 @@ import {
   Divider,
   Select,
   message,
+  Row,
+  Col,
+  DatePicker,
 } from "antd";
 import { MailOutlined } from "@ant-design/icons";
 import bcrypt from "bcryptjs";
@@ -115,57 +118,87 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
     if (step == 0) {
       return (
         <Form layout="vertical" form={form1} onFinish={handleNewUser}>
-          <Form.Item
-            label="Email"
-            name="username"
-            rules={[
-              { required: true, message: "Email is empty" },
-              ({ getFieldValue }) => ({
-                validator(_, value) {
-                  const reg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                  const email = getFieldValue("username");
-                  if (reg.test(email)) return Promise.resolve("");
-                  else if (email == "") return Promise.resolve();
-                  else return Promise.reject("Invalid email");
-                },
-              }),
-            ]}
-          >
-            <Input
-              suffix={<MailOutlined />}
-              size="large"
-              style={{
-                width: 300,
-              }}
-            />
-          </Form.Item>
-          <Form.Item
-            label="Password"
-            name="password"
-            rules={[{ required: true, message: "Password is empty" }]}
-          >
-            <Input.Password
-              suffix={<MailOutlined />}
-              size="large"
-              style={{
-                width: 300,
-              }}
-            />
-          </Form.Item>
-          <Form.Item label="Status" name="status" initialValue="active">
-            <Select
-              options={[
-                {
-                  label: "Active",
-                  value: "active",
-                },
-                {
-                  label: "Inactive",
-                  value: "inactive",
-                },
-              ]}
-            />
-          </Form.Item>
+          <Row gutter={[32, 32]}>
+            <Col span={12}>
+              <Form.Item
+                label="Email"
+                name="username"
+                rules={[
+                  { required: true, message: "Email is empty" },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const reg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                      const email = getFieldValue("username");
+                      if (reg.test(email)) return Promise.resolve("");
+                      else if (email == "") return Promise.resolve();
+                      else return Promise.reject("Invalid email");
+                    },
+                  }),
+                ]}
+              >
+                <Input
+                  suffix={<MailOutlined />}
+                  size="large"
+                  style={{
+                    width: 300,
+                  }}
+                />
+              </Form.Item>
+              <Form.Item
+                label="Password"
+                name="password"
+                rules={[{ required: true, message: "Password is empty" }]}
+              >
+                <Input.Password
+                  suffix={<MailOutlined />}
+                  size="large"
+                  style={{
+                    width: 300,
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="Status" name="status" initialValue="active">
+                <Select
+                  options={[
+                    {
+                      label: "Active",
+                      value: "active",
+                    },
+                    {
+                      label: "Inactive",
+                      value: "inactive",
+                    },
+                  ]}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item
+                label="Yearly Due"
+                name="yearlyDueDate"
+                rules={[{ required: true, message: "Yearly Due is empty" }]}
+              >
+                <DatePicker
+                  size="large"
+                  style={{
+                    width: 300,
+                  }}
+                />
+              </Form.Item>
+              <Form.Item
+                label="Monthly Due"
+                name="monthlyDueDate"
+                rules={[{ required: true, message: "Monthly Due is empty" }]}
+              >
+                <DatePicker
+                  size="large"
+                  style={{
+                    width: 300,
+                  }}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       );
     } else

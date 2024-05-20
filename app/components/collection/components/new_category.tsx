@@ -1,5 +1,13 @@
 import React, { useEffect } from "react";
-import { Button, Form, Input, InputNumber, Modal, Select } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  Modal,
+  Select,
+  Typography,
+} from "antd";
 import { NewCategoryProps } from "@/types";
 
 const NewCategory = ({
@@ -26,7 +34,11 @@ const NewCategory = ({
       open={open}
       onCancel={clearAll}
       afterClose={clearAll}
-      title={isEdit ? "Update Category" : "Add New Category"}
+      title={
+        <Typography.Title level={2}>
+          {isEdit ? "Update Category" : "Add New Category"}
+        </Typography.Title>
+      }
       footer={null}
       closable={false}
       destroyOnClose
@@ -45,7 +57,7 @@ const NewCategory = ({
           style={{ marginBottom: 5 }}
           rules={[{ required: true }]}
         >
-          <Input />
+          <Input size="large" />
         </Form.Item>
         <Form.Item name="type" label="Type" rules={[{ required: true }]}>
           <Select
@@ -53,6 +65,7 @@ const NewCategory = ({
               { label: "Monthly/Yearly Due", value: "due" },
               { label: "Service/Rental", value: "service" },
             ]}
+            size="large"
           />
         </Form.Item>
         <Form.Item
@@ -61,7 +74,7 @@ const NewCategory = ({
           style={{ marginBottom: 5 }}
           rules={[{ required: true }]}
         >
-          <Input.TextArea autoSize={{ minRows: 2, maxRows: 5 }} />
+          <Input.TextArea autoSize={{ minRows: 2, maxRows: 5 }} size="large" />
         </Form.Item>
         <Form.Item
           name="fee"
@@ -73,6 +86,7 @@ const NewCategory = ({
             prefix="₱"
             style={{ width: "100%" }}
             min={0}
+            size="large"
             formatter={(value: any) =>
               value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
             }
@@ -87,6 +101,7 @@ const NewCategory = ({
         >
           <Select
             defaultValue="active"
+            size="large"
             options={[
               { label: "Active", value: "active" },
               { label: "Inactive", value: "Inactiveactive" },
@@ -94,7 +109,13 @@ const NewCategory = ({
           />
         </Form.Item>
         <Form.Item noStyle>
-          <Button size="large" type="primary" htmlType="submit" block>
+          <Button
+            size="large"
+            type="primary"
+            htmlType="submit"
+            block
+            style={{ fontSize: "2em", height: 60 }}
+          >
             {isEdit ? "UPDATE" : "ADD"}
           </Button>
         </Form.Item>

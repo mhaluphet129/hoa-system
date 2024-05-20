@@ -15,7 +15,7 @@ async function handler(
 
   if (method === "GET") {
     const { type } = req.query;
-    return await User.find({ type })
+    return await User.find(type ? { type } : {})
       .populate("homeownerId staffId treasurerId")
       .then((e) =>
         res.json({ code: 200, success: true, data: e as UserType[] })

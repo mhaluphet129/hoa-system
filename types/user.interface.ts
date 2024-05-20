@@ -11,6 +11,7 @@ export interface User {
   staffId?: Staff;
   treasurerId?: Treasurer;
   status?: UserStatus;
+  createdAt?: Date;
 }
 
 export interface ProtectedUser {
@@ -37,6 +38,8 @@ export interface Homeowner {
   address: string;
   createdAt?: Date;
   updatedAt?: Date;
+  monthlyDueDate?: Date;
+  yearlyDueDate?: Date;
 }
 
 export interface Staff {
