@@ -6,3 +6,5 @@ module.exports = {
   },
   plugins: [],
 };
+
+// just add comments
