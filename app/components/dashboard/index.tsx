@@ -27,13 +27,16 @@ import {
   Event,
   AnnouncementDetailsProps,
   User,
+  Transaction,
 } from "@/types";
 import { EventService, UtilService, UserService } from "@/services";
 import { useUserStore } from "@/services/context";
 import AnnouncementDetails from "../announcement_details";
+import DueDates from "../dues/due_dates";
 
 const Dashboard = () => {
   const [homeowners, setHomeowners] = useState<HomeownerColumn[]>([]);
+  const [transaction, setTransaction] = useState<Transaction[]>([]);
   const [staffs, setStaffs] = useState<User[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(false);
@@ -113,14 +116,26 @@ const Dashboard = () => {
     },
   ];
 
+  const getTransactLength = () => {
+    let paid = transaction.filter((e) => e.status == "completed").length;
+    let ongoing = transaction.filter(
+      (e) => e.status == "pending" && dayjs(e.dateCollected).isAfter(dayjs())
+    ).length;
+    let overdue = transaction.filter(
+      (e) => e.status == "pending" && dayjs(e.dateCollected).isBefore(dayjs())
+    ).length;
+
+    return [paid, ongoing, overdue];
+  };
+
   useEffect(() => {
     setLoading(true);
     (async (_) => {
       let res = await _.getDashboardData();
       if (res?.success ?? false) {
         setHomeowners(res?.data?.homeowners ?? []);
-        setLoading(false);
-      } else setLoading(false);
+        setTransaction(res?.data?.transaction ?? []);
+      }
     })(util);
 
     (async (_) => {
@@ -129,14 +144,16 @@ const Dashboard = () => {
     })(event);
 
     (async (_) => {
-      let res = await _.getUsers("staff");
+      let res = await _.getUsers({ type: "staff" });
       if (res?.success ?? false) setStaffs(res?.data ?? []);
     })(user);
+
+    setLoading(false);
   }, []);
 
   return (
     <>
-      <Spin spinning={loading}>
+      <Spin spinning={false}>
         <Row gutter={[32, 32]}>
           {role != "homeowner" && (
             <Col span={8}>
@@ -147,26 +164,26 @@ const Dashboard = () => {
                     overdue homeowners
                   </Typography.Title>
                 }
-                extra={
-                  <Select
-                    defaultValue={dayjs().format("MMMM")}
-                    style={{
-                      width: 120,
-                    }}
-                    options={jason.months.map((e) => ({
-                      label: e,
-                      value: e.toLocaleLowerCase(),
-                    }))}
-                  />
-                }
+                // extra={
+                //   <Select
+                //     defaultValue={dayjs().format("MMMM")}
+                //     style={{
+                //       width: 120,
+                //     }}
+                //     options={jason.months.map((e) => ({
+                //       label: e,
+                //       value: e.toLocaleLowerCase(),
+                //     }))}
+                //   />
+                // }
                 styles={{
                   body: {
                     display: "flex",
                     alignItems: "center",
                     flexDirection: "column",
                     justifyContent: "center",
-                    maxHeight: 500,
-                    minHeight: 500,
+                    maxHeight: 490,
+                    minHeight: 490,
                     overflow: "scroll",
                   },
                 }}
@@ -180,12 +197,12 @@ const Dashboard = () => {
                 >
                   <Doughnut
                     data={{
-                      labels: ["Red", "Orange", "Yellow", "Green", "Blue"],
+                      labels: ["Paid", "Ongoing", "Overdue"],
                       datasets: [
                         {
                           label: "Dataset 1",
-                          data: [1, 2, 3, 4],
-                          backgroundColor: ["#f00", , "#0f0", "#00f", "#fff"],
+                          data: getTransactLength(),
+                          backgroundColor: ["#0f0", "#a5baff", "#f00"],
                         },
                       ],
                     }}
@@ -201,9 +218,17 @@ const Dashboard = () => {
                     marginTop: 20,
                   }}
                   dataSource={[
-                    { type: "Paid", color: "#0E5FD9", total: 100 },
-                    { type: "Ongoing", color: "#FF9500", total: 30 },
-                    { type: "Overdue", color: "#E84646", total: 10 },
+                    { type: "Paid", total: getTransactLength()[0] },
+                    {
+                      type: "Ongoing",
+                      color: "#FF9500",
+                      total: getTransactLength()[1],
+                    },
+                    {
+                      type: "Overdue",
+                      color: "#E84646",
+                      total: getTransactLength()[2],
+                    },
                   ]}
                   columns={[
                     { title: "Type", dataIndex: "type" },
@@ -212,6 +237,78 @@ const Dashboard = () => {
                   rowKey={(e) => e.type}
                   pagination={false}
                 />
+              </Card>
+            </Col>
+          )}
+          <Col span={16}>
+            <Card
+              styles={{
+                body: {
+                  maxHeight: 500,
+                  minHeight: 500,
+                  overflow: "scroll",
+                },
+              }}
+              loading={loading}
+              title={
+                <div
+                  style={{
+                    margin: 5,
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <LuMegaphone style={{ marginRight: 10, fontSize: "1.6em" }} />
+                  <Typography.Title level={4} style={{ margin: 0 }}>
+                    Events / Announcements
+                  </Typography.Title>
+                </div>
+              }
+              hoverable
+            >
+              <Table
+                dataSource={events}
+                columns={eventsColumn}
+                rowKey={(e) => e._id ?? "null-agoy"}
+                pagination={false}
+                onRow={(data) => {
+                  return {
+                    onClick: () =>
+                      setAnnouncementOpt({ open: true, announcement: data }),
+                  };
+                }}
+              />
+            </Card>
+          </Col>
+          {["treasurer", "staff"].includes(role!) && (
+            <Col span={8}>
+              <Card
+                styles={{
+                  body: {
+                    maxHeight: 500,
+                    minHeight: 500,
+                    overflow: "scroll",
+                    paddingLeft: 5,
+                    paddingRight: 5,
+                  },
+                }}
+                title={
+                  <div
+                    style={{
+                      margin: 5,
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    <TbReceipt style={{ marginRight: 10, fontSize: "1.6em" }} />
+                    <Typography.Title level={4} style={{ margin: 0 }}>
+                      Due Dates
+                    </Typography.Title>
+                  </div>
+                }
+                hoverable
+              >
+                <DueDates />
               </Card>
             </Col>
           )}
@@ -286,7 +383,7 @@ const Dashboard = () => {
               </Card>
             </Col>
           )}
-          {["homeowner", "staff", "treasurer"].includes(role!) && (
+          {["treasurer"].includes(role!) && (
             <Col span={8}>
               <Card
                 styles={{
@@ -323,73 +420,8 @@ const Dashboard = () => {
               </Card>
             </Col>
           )}
-          {["treasurer"].includes(role!) && (
-            <Col span={8}>
-              <Card
-                styles={{
-                  body: {
-                    maxHeight: 500,
-                    minHeight: 500,
-                    overflow: "scroll",
-                  },
-                }}
-                title={
-                  <div
-                    style={{
-                      margin: 5,
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    <TbReceipt style={{ marginRight: 10, fontSize: "1.6em" }} />
-                    <Typography.Title level={4} style={{ margin: 0 }}>
-                      Due Dates
-                    </Typography.Title>
-                  </div>
-                }
-                hoverable
-              ></Card>
-            </Col>
-          )}
-          <Col span={16}>
-            <Card
-              styles={{
-                body: {
-                  maxHeight: 500,
-                  minHeight: 500,
-                  overflow: "scroll",
-                },
-              }}
-              title={
-                <div
-                  style={{
-                    margin: 5,
-                    display: "flex",
-                    alignItems: "center",
-                  }}
-                >
-                  <LuMegaphone style={{ marginRight: 10, fontSize: "1.6em" }} />
-                  <Typography.Title level={4} style={{ margin: 0 }}>
-                    Events / Announcements
-                  </Typography.Title>
-                </div>
-              }
-              hoverable
-            >
-              <Table
-                dataSource={events}
-                columns={eventsColumn}
-                rowKey={(e) => e._id ?? "null-agoy"}
-                pagination={false}
-                onRow={(data) => {
-                  return {
-                    onClick: () =>
-                      setAnnouncementOpt({ open: true, announcement: data }),
-                  };
-                }}
-              />
-            </Card>
-          </Col>
+
+          {/* add due cards */}
         </Row>
       </Spin>
 

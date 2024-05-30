@@ -5,6 +5,8 @@ import {
   ExtendedResponse,
   Category,
   CategoryData,
+  Staff,
+  Transaction,
 } from "@/types";
 import Loader from "./utils/class_loader";
 
@@ -24,12 +26,9 @@ export class StaffService extends Loader {
   }
 
   public async getCategory(): Promise<ExtendedResponse<Category[]>> {
-    this.loaderPush("get-cat");
-    const response = await this.instance.get<Category[]>({
+    return await this.instance.get<Category[]>({
       endpoint: "/staff/category",
     });
-    this.loaderPop("get-cat");
-    return response;
   }
 
   public async newCategory(category: CategoryData): Promise<Response> {
@@ -63,5 +62,42 @@ export class StaffService extends Loader {
     });
     this.loaderPop("del-cat");
     return response;
+  }
+
+  public async updateStaff(_id: string, payload: any) {
+    return await this.instance.post<Staff>({
+      endpoint: "/staff/update",
+      payload: {
+        _id,
+        ...payload,
+      },
+    });
+  }
+
+  public async getDues(query?: any) {
+    return await this.instance.get<Transaction[]>({
+      endpoint: "/due",
+      query,
+    });
+  }
+  public async newDue(payload: Transaction) {
+    return await this.instance.post<Transaction>({
+      endpoint: "/due",
+      payload,
+    });
+  }
+
+  public async updateTransaction(_id: string, payload: any) {
+    return await this.instance.post<Response>({
+      endpoint: "/due",
+      payload: { ...payload, _id },
+    });
+  }
+
+  public async deleteTransaction(id: string) {
+    return await this.instance.get<Response>({
+      endpoint: "/due/delete",
+      query: { id },
+    });
   }
 }

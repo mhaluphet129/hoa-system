@@ -1,5 +1,5 @@
 import dbConnect from "@/database/dbConnect";
-import Homeowner from "@/database/models/user_homeowner.schema";
+import Staff from "@/database/models/user_staff.schema";
 import { ExtendedResponse, Staff as StaffProp } from "@/types";
 
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -11,7 +11,7 @@ async function handler(
   await dbConnect();
   const { method } = req;
   if (method === "POST") {
-    return await Homeowner.findOneAndUpdate(
+    return await Staff.findOneAndUpdate(
       { _id: req.body._id },
       { $set: req.body },
       { returnOriginal: false }

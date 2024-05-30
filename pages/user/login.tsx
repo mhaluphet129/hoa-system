@@ -9,7 +9,13 @@ import {
 } from "@ant-design/icons";
 
 import { verify } from "@/assets/js";
-import { AuthService, UtilService, UserService } from "@/services";
+import {
+  AuthService,
+  UtilService,
+  UserService,
+  TreasurerService,
+  RegistrationService,
+} from "@/services";
 import { useUserStore, useAuthStore } from "@/services/context";
 import { Staff, Treasurer, User, UserType } from "@/types";
 
@@ -22,6 +28,8 @@ const Login = ({ private_key }: { private_key: string }) => {
   const auth = new AuthService();
   const util = new UtilService();
   const user = new UserService();
+  const treasurer = new TreasurerService();
+  const register = new RegistrationService();
 
   const { setUser } = useUserStore();
   const { setAccessToken } = useAuthStore();
@@ -47,7 +55,7 @@ const Login = ({ private_key }: { private_key: string }) => {
     }
   };
 
-  const createStakeholder = async (type: UserType) => {
+  const createStakeholder = async (type: string) => {
     let username = "";
     let password = await bcrypt.hash(
       "password",
@@ -69,6 +77,7 @@ const Login = ({ private_key }: { private_key: string }) => {
         username = "treasurer-01";
         stakeholder = {
           account_balance: 0,
+          name: "Treasurer-01",
         };
         break;
       }
@@ -79,11 +88,16 @@ const Login = ({ private_key }: { private_key: string }) => {
     }
 
     if (username != "" && stakeholder != null) {
+      let _;
+      if (type == "treasurer")
+        _ = await treasurer.newTreasurer(stakeholder as Treasurer);
+      else _ = await register.newStaff(stakeholder as Staff);
+
       let newUser: User = {
         username,
         password,
-        type,
-        [type]: stakeholder,
+        type: type as UserType,
+        [`${type}Id`]: _?.data?._id,
       };
 
       let res = await user.createUser(newUser);
@@ -101,8 +115,8 @@ const Login = ({ private_key }: { private_key: string }) => {
       let res = await _.checkStakeholders();
       if (res.success) {
         if (res.data) {
-          Object.values(res.data).map((e) => {
-            if (e ?? true) createStakeholder(e);
+          Object.keys(res.data).map((e) => {
+            if (!(res.data as any)[e]) createStakeholder(e);
           });
         }
       } else {

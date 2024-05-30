@@ -21,7 +21,7 @@ async function handler(
 
   if (method === "POST") {
     // separate the transaction if not the same type
-    const { categorySelected } = req.body;
+    const { categorySelected, complete } = req.body;
     const yearlyId = await Category.findOne({ category: "Yearly Due" }).then(
       (e) => e._id
     );
@@ -38,9 +38,17 @@ async function handler(
 
     try {
       if (serviceIds?.length > 0 ?? false)
-        await Transaction.create({ ...req.body, categorySelected: serviceIds });
+        await Transaction.create({
+          ...req.body,
+          categorySelected: serviceIds,
+          status: complete ? "completed" : "pending",
+        });
       if (dueIds?.length > 0 ?? false)
-        await Transaction.create({ ...req.body, categorySelected: dueIds });
+        await Transaction.create({
+          ...req.body,
+          categorySelected: dueIds,
+          status: complete ? "completed" : "pending",
+        });
 
       return res.json({
         code: 200,
@@ -62,60 +70,18 @@ async function handler(
       ...(userId
         ? [
             {
-              $match: { userId: new mongoose.Types.ObjectId(userId as string) },
+              $match: {
+                homeownerId: new mongoose.Types.ObjectId(userId as string),
+              },
             },
           ]
         : []),
       {
         $lookup: {
-          from: "users",
-          localField: "userId",
+          from: "homeowners",
+          localField: "homeownerId",
           foreignField: "_id",
-          pipeline: [
-            {
-              $lookup: {
-                from: "homeowners",
-                localField: "homeownerId",
-                foreignField: "_id",
-                as: "homeownerId",
-              },
-            },
-            {
-              $unwind: {
-                path: "$homeownerId",
-                preserveNullAndEmptyArrays: true,
-              },
-            },
-            {
-              $lookup: {
-                from: "staffs",
-                localField: "staffId",
-                foreignField: "_id",
-                as: "staffId",
-              },
-            },
-            {
-              $unwind: {
-                path: "$staffId",
-                preserveNullAndEmptyArrays: true,
-              },
-            },
-            {
-              $lookup: {
-                from: "treasurers",
-                localField: "treasurerId",
-                foreignField: "_id",
-                as: "treasurerId",
-              },
-            },
-            {
-              $unwind: {
-                path: "$treasurerId",
-                preserveNullAndEmptyArrays: true,
-              },
-            },
-          ],
-          as: "userId",
+          as: "homeownerId",
         },
       },
       {
@@ -127,7 +93,7 @@ async function handler(
         },
       },
       {
-        $unwind: "$userId",
+        $unwind: "$homeownerId",
       },
       {
         $addFields: {

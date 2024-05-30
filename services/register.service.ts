@@ -5,16 +5,11 @@ import Loader from "./utils/class_loader";
 export class RegistrationService extends Loader {
   private readonly instance = new ApiService();
 
-  public async newHomeOwner(
-    user: Homeowner
-  ): Promise<ExtendedResponse<Homeowner>> {
-    this.loaderPush("register");
-    const response = await this.instance.post<Homeowner>({
+  public async newHomeOwner(user: Homeowner) {
+    return await this.instance.post<Homeowner>({
       endpoint: "/homeowner/register",
       payload: user,
     });
-    this.loaderPop("register");
-    return response;
   }
 
   public async newStaff(user: Staff): Promise<ExtendedResponse<Staff>> {
@@ -27,33 +22,23 @@ export class RegistrationService extends Loader {
     return response;
   }
 
-  // public async updateHomeowner(
-  //   user: HomeOwnerRegistrationDTO
-  // ): Promise<Response> {
-  //   // * temporary remove class-validator for dto optimization later on
+  public async updateHomeowner(_id: string, payload: any) {
+    return await this.instance.post({
+      endpoint: "/homeowner/update",
+      payload: {
+        _id,
+        ...payload,
+      },
+    });
+  }
 
-  //   this.loaderPush("update");
-  //   const response = await this.instance.post({
-  //     endpoint: "/homeowner/update",
-  //     payload: user,
-  //   });
-
-  //   if (response instanceof Success) {
-  //     this.loaderPop("update");
-  //     return {
-  //       code: response.code,
-  //       success: true,
-  //       data: response.response,
-  //     };
-  //   } else {
-  //     this.loaderPop("update");
-  //     return {
-  //       code: response.code,
-  //       success: false,
-  //       data: {
-  //         message: response.response?.message ?? "Error in the Server",
-  //       },
-  //     };
-  //   }
-  // }
+  public async updateStaff(_id: string, payload: any) {
+    return await this.instance.post({
+      endpoint: "/staff/update",
+      payload: {
+        _id,
+        ...payload,
+      },
+    });
+  }
 }

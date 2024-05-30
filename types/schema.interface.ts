@@ -1,3 +1,4 @@
+import { Transaction } from "./props.types";
 import { Homeowner } from "./user.interface";
 
 export type CategoryStatus = "active" | "inactive";
@@ -37,4 +38,5 @@ export interface HomeownerColumn {
 }
 export interface DashboardData {
   homeowners: HomeownerColumn[];
+  transaction: Transaction[];
 }

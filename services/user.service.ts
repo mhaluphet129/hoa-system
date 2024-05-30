@@ -28,23 +28,24 @@ export class UserService extends Loader {
     return response;
   }
 
-  public async updateUser(user: UpdateHomeownerProps): Promise<Response> {
+  public async updateUser(_id: string, payload: any) {
     this.loaderPush("updating-ho");
     const response = this.instance.post({
       endpoint: "/user/update-user",
-      payload: user,
+      payload: {
+        _id,
+        ...payload,
+      },
     });
     this.loaderPop("updating-ho");
     return response;
   }
 
-  public async getUsers(type?: string): Promise<ExtendedResponse<User[]>> {
+  public async getUsers(query?: any): Promise<ExtendedResponse<User[]>> {
     this.loaderPush("fetch-user");
     const response = await this.instance.get<User[]>({
       endpoint: "/user/get-users",
-      query: {
-        type,
-      },
+      query,
     });
     this.loaderPop("fetch-user");
     return response;

@@ -1,157 +1,339 @@
-import { ReactNode, useState } from "react";
-import { Button, Table, Tag, Typography, notification } from "antd";
-import dayjs from "dayjs";
-import { CopyOutlined, PrinterOutlined } from "@ant-design/icons";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Button,
+  DatePicker,
+  Popconfirm,
+  Select,
+  Space,
+  Table,
+  TableColumnsType,
+  Tag,
+  Tooltip,
+  message,
+} from "antd";
+import dayjs, { Dayjs } from "dayjs";
+import { PlusOutlined, DeleteOutlined, CheckOutlined } from "@ant-design/icons";
+
+import { StaffService, UserService } from "@/services";
+import { Category, Transaction } from "@/types";
+import { NewTransaction } from "@/app/components/homeowner/components/homeowner_transaction_details";
+
+interface Filter {
+  category?: string | null;
+  fromDate?: Dayjs | null;
+  toDate?: Dayjs | null;
+  status?: "completed" | "overdue" | "ongoing" | null;
+}
 
 const Dues = () => {
-  const [api, contextHolder] = notification.useNotification();
-  const [counter, setCounter] = useState(1);
-  const getTransationTypeBadge = (str: string): ReactNode => {
-    let bgColor = "";
-    let textColor = "";
-    let name = "";
+  const [dues, setDues] = useState<Transaction[]>([]);
+  const [category, setCategory] = useState<Category[]>([]);
+  const [openNewTransaction, setOpenNewTransaction] = useState(false);
+  const [filter, setFilter] = useState<Filter>({
+    category: null,
+    fromDate: null,
+    toDate: null,
+    status: null,
+  });
 
-    if (str.startsWith("GCASH")) {
-      bgColor = "#297bfa";
-      textColor = "#fff";
-      name = "GCASH";
-    } else if (str.startsWith("ELOAD")) {
-      bgColor = "#ffc107";
-      textColor = "#fff";
-      name = "ELOAD";
+  const staff = new StaffService();
+  const user = new UserService();
+
+  const memoizedCategory = useMemo(() => {
+    if (category !== null) {
+      return category;
+    } else {
+      getCategories();
+      return null;
     }
-    return (
-      <Tag color={bgColor} style={{ color: textColor }}>
-        {name}
-      </Tag>
-    );
-  };
+  }, [category]);
 
-  const getStatusBadge = (str: string): ReactNode => {
-    let bgColor = "";
-    if (str == "pending") bgColor = "#ffc107";
-    else if (str == "completed") bgColor = "#28a745";
-    else bgColor = "#f00";
-    return <Tag color={bgColor}>{str.toLocaleUpperCase()}</Tag>;
-  };
+  const getDues = async ({ category, fromDate, toDate, status }: Filter) =>
+    await staff
+      .getDues({ category, fromDate, toDate, status })
+      .then((e) => setDues(e.data ?? []));
 
-  const mock = [
+  const getCategories = async () =>
+    await staff.getCategory().then((e) => setCategory(e.data ?? []));
+
+  const generateName = (first: string, last: string) =>
+    first[0].toLocaleUpperCase() +
+    first.slice(1) +
+    " " +
+    last[0].toLocaleUpperCase() +
+    last.slice(1);
+
+  const columns: TableColumnsType<Transaction> = [
     {
-      id: 1,
-      type: "GCASH CASH-IN",
-      dateCreated: dayjs().add(1, "day"),
-      refNumber: null,
-      status: "pending",
+      title: "Home Owner",
+      render: (_, row) =>
+        generateName(row.homeownerId.name, row.homeownerId.lastname),
     },
     {
-      id: 2,
-      type: "GCASH CASH-IN",
-      dateCreated: dayjs(),
-      refNumber: "090909",
-      status: "completed",
+      title: "Type",
+      render: (_, row) =>
+        row.categorySelected.map((e: Category) => (
+          <Tag>{e.category.toLocaleUpperCase()}</Tag>
+        )),
     },
     {
-      id: 3,
-      type: "ELOAD",
-      dateCreated: dayjs(),
-      refNumber: "123456",
-      status: "completed",
+      title: "Amount",
+      render: (_, row) =>
+        `₱ ${row.categorySelected
+          .reduce((p, n) => p + n.fee, 0)
+          .toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`,
     },
     {
-      id: 4,
-      type: "GCASH CASH-IN",
-      dateCreated: dayjs().add(2, "day"),
-      refNumber: null,
-      status: "failed",
+      title: "Due Date",
+      render: (_, row) =>
+        dayjs(
+          checkTypeName(row.categorySelected[0].category, "monthly")
+            ? row.homeownerId.monthlyDueDate
+            : checkTypeName(row.categorySelected[0].category, "yearly")
+            ? row.homeownerId.yearlyDueDate
+            : row.dateCollected
+        ).format("MMMM DD, YYYY"),
     },
     {
-      id: 5,
-      type: "GCASH CASH-IN",
-      dateCreated: dayjs().add(1, "day"),
-      refNumber: null,
-      status: "pending",
+      title: "Status",
+      render: (_, row) => statusBadge(row),
     },
     {
-      id: 6,
-      type: "GCASH CASH-IN",
-      dateCreated: dayjs(),
-      refNumber: "090909",
-      status: "completed",
-    },
-    {
-      id: 7,
-      type: "ELOAD",
-      dateCreated: dayjs(),
-      refNumber: "123456",
-      status: "completed",
-    },
-    {
-      id: 8,
-      type: "GCASH CASH-IN",
-      dateCreated: dayjs().add(2, "day"),
-      refNumber: null,
-      status: "failed",
+      title: "Function",
+      align: "center",
+      render: (_, row) => (
+        <Space>
+          <Tooltip
+            title={row.status != "completed" ? "Update as Completed" : ""}
+          >
+            <Popconfirm
+              title={null}
+              icon={null}
+              okText="Mark as Completed"
+              okButtonProps={{ type: "primary", size: "large" }}
+              cancelButtonProps={{ size: "large" }}
+              onConfirm={() => handleMarkAsCompleted(row._id ?? "")}
+            >
+              <Button
+                icon={<CheckOutlined />}
+                type="primary"
+                size="large"
+                disabled={row.status == "completed"}
+              />
+            </Popconfirm>
+          </Tooltip>
+          <Popconfirm
+            title={
+              <span style={{ fontSize: "1.2em" }}>Delete Confirmation</span>
+            }
+            icon={null}
+            okText="DELETE"
+            okType="danger"
+            okButtonProps={{ type: "primary", size: "large" }}
+            cancelButtonProps={{ size: "large" }}
+            onConfirm={() => handleDeleteDue(row._id ?? "")}
+          >
+            <Button icon={<DeleteOutlined />} size="large" danger />
+          </Popconfirm>
+        </Space>
+      ),
     },
   ];
 
+  const getHeader = () => (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+      }}
+    >
+      <Space>
+        {/* <Typography.Title level={5} style={{ margin: 0, marginRight: 20 }}>
+        FILTER:{" "}
+      </Typography.Title> */}
+        <Select
+          placeholder="Select Category"
+          size="large"
+          style={{
+            width: 150,
+          }}
+          onChange={(e) => setFilter({ ...filter, category: e })}
+          options={(memoizedCategory ?? []).map((e) => ({
+            label: e.category,
+            value: e._id,
+          }))}
+          allowClear
+        />
+        {/* <DatePicker.RangePicker
+          format="MMMM DD, YYYY"
+          disabled
+          size="large"
+          placeholder={["Select a Start Date", "Select an End Date"]}
+          defaultValue={[dayjs().startOf("year"), dayjs().endOf("year")]}
+          onChange={(e) =>
+            setFilter({
+              ...filter,
+              fromDate: e ? e[0] : null,
+              toDate: e ? e[1] : null,
+            })
+          }
+        /> */}
+        <Select
+          placeholder="Select Status"
+          size="large"
+          style={{
+            width: 150,
+          }}
+          options={["Completed", "Overdue", "Ongoing"].map((e) => ({
+            label: e,
+            value: e,
+          }))}
+          onChange={(e) =>
+            setFilter({
+              ...filter,
+              status: e,
+            })
+          }
+          allowClear
+        />
+      </Space>
+      <Button
+        size="large"
+        icon={<PlusOutlined />}
+        onClick={() => setOpenNewTransaction(true)}
+      >
+        New Transaction
+      </Button>
+    </div>
+  );
+
+  const handleNewTransaction = (e: any) => {
+    const { complete, categorySelected, userId, dateCollected } = e;
+
+    if (complete) {
+      (async (_) => {
+        let res = await _.newTransaction(e);
+
+        if (res?.success ?? false) {
+          message.success(res?.message ?? "Success");
+          setOpenNewTransaction(false);
+          getDues(filter);
+        }
+      })(user);
+    } else {
+      (async (_) => {
+        await staff
+          .newDue({
+            homeownerId: userId,
+            status: "pending",
+            categorySelected,
+            dateCollected,
+          })
+          .then(() => getDues(filter));
+      })(staff);
+
+      message.success("Successfully Created");
+
+      setOpenNewTransaction(false);
+    }
+  };
+
+  const handleDeleteDue = (id: string) => {
+    (async (_) => {
+      let res = await _.deleteTransaction(id);
+
+      if (res?.success ?? false) {
+        message.success(res?.message ?? "Success");
+        getDues(filter);
+      }
+    })(staff);
+  };
+
+  const handleMarkAsCompleted = (id: string) => {
+    (async (_) => {
+      let res = await _.updateTransaction(id, { status: "completed" });
+
+      if (res?.success ?? false) {
+        message.success(res?.message ?? "Success");
+        getDues(filter);
+      }
+    })(staff);
+  };
+
+  useEffect(() => {
+    getCategories();
+  }, []);
+
+  useEffect(() => {
+    getDues(filter);
+  }, [filter, dues]);
+
   return (
     <>
-      <Button
-        onClick={() => {
-          setCounter(counter + 1);
-          api.info({
-            message: `Transaction ID #${counter} has been updated`,
-          });
-        }}
-      >
-        CLICK ME
-      </Button>
-      {contextHolder}
+      <Table title={getHeader} dataSource={dues} columns={columns} />
+
+      {/* context */}
+      <NewTransaction
+        open={openNewTransaction}
+        close={() => setOpenNewTransaction(false)}
+        onSave={handleNewTransaction}
+        fromDue
+      />
     </>
-    // <Table
-    //   dataSource={mock}
-    //   columns={[
-    //     {
-    //       title: "ID",
-    //       dataIndex: "id",
-    //     },
-    //     {
-    //       title: "Transaction Type",
-    //       render: (_, row) => getTransationTypeBadge(row?.type),
-    //     },
-    //     {
-    //       title: "Date Request",
-    //       render: (_, row) => dayjs(row?.dateCreated).format("MMMM DD, YYYY"),
-    //     },
-    //     {
-    //       title: "Reference #",
-    //       render: (_, row) =>
-    //         row.refNumber ? (
-    //           <Typography.Link>
-    //             <CopyOutlined />
-    //             {"   "}
-    //             {row?.refNumber}
-    //           </Typography.Link>
-    //         ) : (
-    //           <Typography.Text type="secondary" italic>
-    //             Not Yet
-    //           </Typography.Text>
-    //         ),
-    //     },
-    //     {
-    //       title: "Status",
-    //       render: (_, row) => getStatusBadge(row?.status),
-    //     },
-    //     {
-    //       title: "Action",
-    //       align: "center",
-    //       render: (_, row) => <Button icon={<PrinterOutlined />} />,
-    //     },
-    //   ]}
-    //   style={{
-    //     width: 900,
-    //   }}
-    // />
+  );
+};
+
+const checkTypeName = (str: string, str2: string) =>
+  str.toLocaleLowerCase().includes(str2.toLocaleLowerCase());
+
+const statusBadge = (d: Transaction) => {
+  let dotColor = "#72f25c";
+  let text = "Completed";
+
+  if (
+    d.status == "pending" &&
+    dayjs(
+      checkTypeName(d.categorySelected[0].category, "monthly")
+        ? d.homeownerId.monthlyDueDate
+        : checkTypeName(d.categorySelected[0].category, "yearly")
+        ? d.homeownerId.yearlyDueDate
+        : d.dateCollected
+    ).diff(dayjs()) > 0
+  ) {
+    dotColor = "#a5baff";
+    text = "Ongoing";
+  }
+
+  if (
+    d.status == "pending" &&
+    dayjs(
+      checkTypeName(d.categorySelected[0].category, "monthly")
+        ? d.homeownerId.monthlyDueDate
+        : checkTypeName(d.categorySelected[0].category, "yearly")
+        ? d.homeownerId.yearlyDueDate
+        : d.dateCollected
+    ).diff(dayjs()) < 0
+  ) {
+    dotColor = "#f00";
+    text = "Overdue";
+  }
+
+  return (
+    <div style={{ display: "flex", alignItems: "center" }}>
+      <span
+        style={{
+          marginRight: 5,
+          height: 10,
+          width: 10,
+          borderRadius: "100%",
+          background: dotColor,
+        }}
+      />
+      {text}
+    </div>
   );
 };
 

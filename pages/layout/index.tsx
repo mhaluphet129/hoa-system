@@ -11,6 +11,7 @@ import { verify } from "@/assets/js";
 
 import { useUserStore } from "@/services/context/user.context";
 import { UtilService } from "@/services";
+import EditProfile from "@/app/components/edit_profiles";
 
 const Sider = ({ selectedIndex, selectedKey, items }: SiderProps) => {
   return (
@@ -54,6 +55,7 @@ const Header = () => {
   const { currentUser } = useUserStore();
   const util = new UtilService();
   const [user, setUser] = useState<User>();
+  const [openEditModal, setOpenEditModal] = useState(false);
 
   const getName = (): string => {
     switch (user?.type) {
@@ -64,7 +66,7 @@ const Header = () => {
         return user?.staffId?.name ?? "";
       }
       case "treasurer": {
-        return "Treasurer no name";
+        return user?.treasurerId?.name ?? "N/A";
       }
 
       case "bod": {
@@ -83,76 +85,77 @@ const Header = () => {
   }, []);
 
   return (
-    <Affix>
-      <Layout.Header
-        style={{
-          backgroundColor: "#fff",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "end",
-          height: 60,
-          width: "100%",
-          paddingInline: 10,
-        }}
-      >
-        <div
+    <>
+      <Affix>
+        <Layout.Header
           style={{
+            backgroundColor: "#fff",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "end",
+            height: 60,
+            width: "100%",
+            paddingInline: 10,
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <Typography.Text style={{ marginRight: 10, textAlign: "end" }}>
-              {getName()}
-            </Typography.Text>
-            <Typography.Text
-              type="secondary"
-              style={{ marginRight: 10, textAlign: "end" }}
-            >
-              {user?.type?.toLocaleUpperCase()}
-            </Typography.Text>
-          </div>
-          <Dropdown
-            menu={{
-              items: [
-                {
-                  label: "Edit Profile",
-                  key: "edit",
-                  // onClick: () =>
-                  //   setOpenEditModal({
-                  //     open: true,
-                  //     data: JSON.parse(user),
-                  //   }),
-                },
-                {
-                  type: "divider",
-                },
-                {
-                  label: (
-                    <div style={{ color: "#ff0000" }}>
-                      logout <LogoutOutlined />
-                    </div>
-                  ),
-                  key: "3",
-                  onClick: () => {
-                    Cookies.remove("token");
-                    window.location.reload();
-                  },
-                },
-              ],
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
-            trigger={["click"]}
           >
-            <Avatar
-              icon={<UserOutlined />}
-              size={40}
-              style={{ cursor: "pointer" }}
-            />
-          </Dropdown>
-        </div>
-      </Layout.Header>
-    </Affix>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <Typography.Text style={{ marginRight: 10, textAlign: "end" }}>
+                {getName()}
+              </Typography.Text>
+              <Typography.Text
+                type="secondary"
+                style={{ marginRight: 10, textAlign: "end" }}
+              >
+                {user?.type?.toLocaleUpperCase()}
+              </Typography.Text>
+            </div>
+            <Dropdown
+              menu={{
+                items: [
+                  {
+                    label: "Edit Profile",
+                    key: "edit",
+                    onClick: () => setOpenEditModal(true),
+                  },
+                  {
+                    type: "divider",
+                  },
+                  {
+                    label: (
+                      <div style={{ color: "#ff0000" }}>
+                        logout <LogoutOutlined />
+                      </div>
+                    ),
+                    key: "3",
+                    onClick: () => {
+                      Cookies.remove("token");
+                      window.location.reload();
+                    },
+                  },
+                ],
+              }}
+              trigger={["click"]}
+            >
+              <Avatar
+                icon={<UserOutlined />}
+                size={40}
+                style={{ cursor: "pointer" }}
+              />
+            </Dropdown>
+          </div>
+        </Layout.Header>
+      </Affix>
+
+      {/* context */}
+      <EditProfile open={openEditModal} close={() => setOpenEditModal(false)} />
+    </>
   );
 };
 

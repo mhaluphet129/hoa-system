@@ -1,21 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Abel&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@600&display=swap");
 
-.main {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6rem;
-  min-height: 100vh;
-}
-
-.login-container {
-  background-image: url("/main-content-img.png");
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-
 .remove-padding-modal .ant-modal-content {
   padding: 5px;
 }
@@ -141,37 +126,34 @@ div.outside {
   color: #fff !important;
 }
 
-.nav-link {
-  text-decoration: none;
-  color: #000;
-  padding: 0.5rem 1rem;
-  position: relative;
-}
-
-.nav-link::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: #000;
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
-}
-
-.nav-link:hover::after,
-.nav-link:focus::after,
-.nav-link.active::after {
-  transform: scaleX(1);
-}
-
-.main-content .right-content {
-  background: #ffa011;
-}
-
 .label-no-padding .ant-form-item-label {
   padding-bottom: 0;
+}
+
+div#main::before {
+  content: "";
+  position: absolute;
+  width: 328px;
+  height: 328px;
+  right: -250px;
+  top: 17px;
+  z-index: 1;
+
+  background: rgba(252, 98, 28, 0.3);
+  filter: blur(125px);
+}
+
+div#main::after {
+  content: "";
+  position: absolute;
+  width: 315px;
+  height: 315px;
+  left: -250px;
+  top: 315px;
+  z-index: 1;
+
+  background: #55a977;
+  filter: blur(125px);
 }
 
 @page {

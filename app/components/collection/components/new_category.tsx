@@ -24,10 +24,9 @@ const NewCategory = ({
     form.resetFields();
     close();
   };
-
   useEffect(() => {
     if (isEdit && data != undefined) form.setFieldsValue(data);
-  }, [data]);
+  }, [data, open, isEdit]);
 
   return (
     <Modal
@@ -56,8 +55,19 @@ const NewCategory = ({
           label="Category"
           style={{ marginBottom: 5 }}
           rules={[{ required: true }]}
+          tooltip={{
+            title:
+              isEdit && ["Yearly Due", "Monthly Due"].includes(data.category)
+                ? "Cannot edit a Monthly or Yearly Due Name"
+                : "",
+          }}
         >
-          <Input size="large" />
+          <Input
+            size="large"
+            disabled={
+              isEdit && ["Yearly Due", "Monthly Due"].includes(data.category)
+            }
+          />
         </Form.Item>
         <Form.Item name="type" label="Type" rules={[{ required: true }]}>
           <Select

@@ -28,7 +28,10 @@ import NewStaff from "./components/new_staff";
 import { User } from "@/types";
 
 const Staff = () => {
-  const [openNewStaff, setOpenNewStaff] = useState(false);
+  const [openNewStaff, setOpenNewStaff] = useState<{
+    open: boolean;
+    user: User | null;
+  }>({ open: false, user: null });
   const [selectedStaff, setSelectedStaff] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [trigger, setTrigger] = useState(0);
@@ -94,7 +97,10 @@ const Staff = () => {
             />
           </Tooltip>
           <Tooltip title="Edit">
-            <Button icon={<EditOutlined />} />
+            <Button
+              icon={<EditOutlined />}
+              onClick={() => setOpenNewStaff({ open: true, user })}
+            />
           </Tooltip>
           <Tooltip title="Delete">
             <Popconfirm
@@ -124,7 +130,7 @@ const Staff = () => {
 
   useEffect(() => {
     (async (_) => {
-      let res = await _.getUsers("staff");
+      let res = await _.getUsers({ type: "staff" });
       if (res?.success ?? false) {
         console.log(res?.data);
         setUsers(res?.data ?? []);
@@ -151,7 +157,7 @@ const Staff = () => {
             />
             <Button
               icon={<PlusOutlined />}
-              onClick={() => setOpenNewStaff(true)}
+              onClick={() => setOpenNewStaff({ open: true, user: null })}
             >
               Add New Staff
             </Button>
@@ -193,8 +199,8 @@ const Staff = () => {
 
       {/* context */}
       <NewStaff
-        open={openNewStaff}
-        close={() => setOpenNewStaff(false)}
+        {...openNewStaff}
+        close={() => setOpenNewStaff({ open: false, user: null })}
         refresh={() => setTrigger(trigger + 1)}
       />
     </Spin>

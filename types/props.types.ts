@@ -63,12 +63,14 @@ export interface ConcernDetalsCardProps {
 export interface NewHomeownerCardProps {
   open: boolean;
   close: () => void;
+  user?: User | null;
 }
 
 export interface NewStaffCardProps {
   open: boolean;
   close: () => void;
   refresh: () => void;
+  user?: User | null;
 }
 
 export interface ConcernProps {
@@ -116,20 +118,22 @@ export interface NewHomeownerTransaction {
   open: boolean;
   close: () => void;
   onSave: (data: NewHomeownerTransactionData) => void;
+  fromDue?: boolean;
 }
 
 type PaymentType = "cash" | "cheque";
 export interface NewHomeownerTransactionData {
-  userId: string | User;
+  homeownerId: Homeowner;
   dateCollected: Date;
-  collectedBy: Staff;
-  paymentType: PaymentType;
-  categorySelected: string[];
+  collectedBy?: Staff;
+  paymentType?: PaymentType;
+  categorySelected: Category[];
   createdAt?: Date;
 }
 export interface Transaction extends NewHomeownerTransactionData {
-  _id: string;
-  totalFee: number;
+  _id?: string;
+  totalFee?: number;
+  status: "completed" | "pending";
 }
 
 // api

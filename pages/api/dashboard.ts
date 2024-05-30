@@ -1,5 +1,6 @@
 import dbConnect from "@/database/dbConnect";
 import Homeowner from "@/database/models/user.schema";
+import Transaction from "@/database/models/transaction.schema";
 import { ExtendedResponse, DashboardData } from "@/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -11,11 +12,10 @@ async function handler(
   const { method } = req;
 
   if (method === "GET") {
-    // * get homeowner
-
-    let homeowners = await Homeowner.find({ type: "homeowner" }).populate(
+    const homeowners = await Homeowner.find({ type: "homeowner" }).populate(
       "homeownerId"
     );
+    const transaction = await Transaction.find();
 
     return res.json({
       code: 200,
@@ -27,6 +27,7 @@ async function handler(
             typeof e.homeownerId == "object" ? e.homeownerId.lastname : null,
           status: e.status,
         })),
+        transaction,
       },
     });
   } else

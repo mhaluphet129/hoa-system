@@ -21,10 +21,7 @@ export default function App({ Component, pageProps }: AppProps) {
           VVVHOA Portal: A Web-Based Application for Vista Verde Village
           Homeowners Association Online Portal
         </title>
-        <meta
-          name="description"
-          content="This system develop to help Landlords, students and OSS admin to ensure and automate booking, student monitoring and boarding house management"
-        />
+        <meta name="description" content="This system is a system" />
         <script src="https://cdn.tailwindcss.com"></script>
       </Head>
       <Component {...pageProps} />

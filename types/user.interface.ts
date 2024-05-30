@@ -50,7 +50,9 @@ export interface Staff {
 }
 
 export interface Treasurer {
+  _id?: string;
   account_balance: number;
+  name: string;
 }
 
 // utils literal haha

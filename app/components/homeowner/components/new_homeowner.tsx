@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Steps,
   Modal,
@@ -12,31 +12,24 @@ import {
   Row,
   Col,
   DatePicker,
+  Typography,
 } from "antd";
 import { MailOutlined } from "@ant-design/icons";
 import bcrypt from "bcryptjs";
+import dayjs from "dayjs";
 
-import { Homeowner, NewHomeownerCardProps } from "@/types";
+import { NewHomeownerCardProps } from "@/types";
 import { RegistrationService, UserService } from "@/services";
 
-const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
+const NewHomeOwner = ({ open, close, user }: NewHomeownerCardProps) => {
   const [step, setStep] = useState(0);
   const [hoEmail, setHoEmail] = useState("");
   const [hoId, setHoId] = useState("");
 
-  const [form2Input, setForm2Input] = useState({
-    lname: "",
-    fname: "",
-    mname: "",
-    memberType: "owner",
-    number: "",
-    address: "",
-  });
-
   const nextStep = () => setStep(step + 1);
 
   const register = new RegistrationService();
-  const user = new UserService();
+  const userService = new UserService();
 
   const [form1] = Form.useForm();
   const [form2] = Form.useForm();
@@ -59,20 +52,44 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
             await form1.validateFields().then(() => form1.submit());
           }}
         >
-          Next
+          {user ? "UPDATE" : "NEXT"}
         </Button>
       );
     } else
       return (
-        <Button type="primary" onClick={handleUpdateUser}>
-          Save & Close
+        <Button
+          type="primary"
+          onClick={async () =>
+            await form2.validateFields().then(() => form2.submit())
+          }
+        >
+          {user ? "UPDATE" : "Save & Close"}
         </Button>
       );
   };
 
   const handleNewUser = async (val: any) => {
+    if (user) {
+      let obj = {
+        username: form1.getFieldValue("username"),
+        password: "",
+      };
+
+      if (!["", null, undefined].includes(form1.getFieldValue("password"))) {
+        obj.password = await bcrypt.hash(form1.getFieldValue("password"), 8);
+      }
+
+      if (obj.password == "") delete (obj as any).password;
+      await userService.updateUser(user?._id ?? "", obj).then((e) => {
+        if (e.success) {
+          message.success(e.message ?? "Success");
+        }
+      });
+      return;
+    }
+
     val.password = await bcrypt.hash(val.password, 8);
-    await user.createUser({ ...val, type: "homeowner" }).then((e) => {
+    await userService.createUser({ ...val, type: "homeowner" }).then((e) => {
       if (e.success) {
         setHoEmail(val.username);
         if (e?.data?._id) setHoId(e?.data?._id);
@@ -84,24 +101,21 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
     });
   };
 
-  const handleUpdateUser = async () => {
-    let val: Homeowner = {
-      lastname: form2Input.lname,
-      name: form2Input.fname,
-      type: form2Input.memberType,
-      phone: form2Input.number,
-      address: form2Input.address,
-      middlename: "",
-      email: "",
-    };
+  const handleUpdateUser = async (aga: any) => {
+    if (user) {
+      await register
+        .updateHomeowner(user?.homeownerId?._id ?? "", form2.getFieldsValue())
+        .then((e) => {
+          message.success(e.message);
+        });
+      return;
+    }
 
-    if (form2Input.mname != "") val.middlename = form2Input.mname;
-    val.email = hoEmail;
     await register
-      .newHomeOwner(val)
+      .newHomeOwner(aga)
       .then(async (e) => {
-        await user
-          .updateUser({ id: hoId, homeownerId: e.data?._id ?? "" })
+        await userService
+          .updateUser(hoId, { homeownerId: e.data?._id ?? "" })
           .then((_) => {
             if (_.success) {
               message.success("Succesfully updated");
@@ -114,10 +128,18 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
       .catch((e) => {});
   };
 
+  const handleNewHomeowner = async () =>
+    await form2.validateFields().then((e) => handleUpdateUser(e));
+
   const getBodyByStep = () => {
-    if (step == 0) {
-      return (
-        <Form layout="vertical" form={form1} onFinish={handleNewUser}>
+    return (
+      <>
+        <Form
+          layout="vertical"
+          form={form1}
+          onFinish={handleNewUser}
+          style={{ display: step == 0 ? "block" : "none" }}
+        >
           <Row gutter={[32, 32]}>
             <Col span={12}>
               <Form.Item
@@ -147,7 +169,12 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
               <Form.Item
                 label="Password"
                 name="password"
-                rules={[{ required: true, message: "Password is empty" }]}
+                rules={[
+                  {
+                    required: user ? false : true,
+                    message: "Password is empty",
+                  },
+                ]}
               >
                 <Input.Password
                   suffix={<MailOutlined />}
@@ -172,42 +199,14 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
                 />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item
-                label="Yearly Due"
-                name="yearlyDueDate"
-                rules={[{ required: true, message: "Yearly Due is empty" }]}
-              >
-                <DatePicker
-                  size="large"
-                  style={{
-                    width: 300,
-                  }}
-                />
-              </Form.Item>
-              <Form.Item
-                label="Monthly Due"
-                name="monthlyDueDate"
-                rules={[{ required: true, message: "Monthly Due is empty" }]}
-              >
-                <DatePicker
-                  size="large"
-                  style={{
-                    width: 300,
-                  }}
-                />
-              </Form.Item>
-            </Col>
           </Row>
         </Form>
-      );
-    } else
-      return (
         <Form
           layout="vertical"
           className="MyForm"
           form={form2}
-          // onFinish={handleUpdateUser}
+          onFinish={handleNewHomeowner}
+          style={{ display: step == 1 ? "block" : "none" }}
         >
           <Space>
             <Form.Item
@@ -220,11 +219,7 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
                 },
               ]}
             >
-              <Input
-                onChange={(e) => {
-                  setForm2Input({ ...form2Input, lname: e.target.value });
-                }}
-              />
+              <Input />
             </Form.Item>
             <Form.Item
               label="First Name"
@@ -236,18 +231,10 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
                 },
               ]}
             >
-              <Input
-                onChange={(e) => {
-                  setForm2Input({ ...form2Input, fname: e.target.value });
-                }}
-              />
+              <Input />
             </Form.Item>
             <Form.Item label="Middle Name (Optional)" name="middlename">
-              <Input
-                onChange={(e) => {
-                  setForm2Input({ ...form2Input, mname: e.target.value });
-                }}
-              />
+              <Input />
             </Form.Item>
             <Form.Item label="Type of Member" name="type" initialValue="owner">
               <Select
@@ -261,9 +248,6 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
                     value: "renter",
                   },
                 ]}
-                onChange={(e) => {
-                  setForm2Input({ ...form2Input, memberType: e });
-                }}
               />
             </Form.Item>
           </Space>
@@ -300,11 +284,7 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
                 }),
               ]}
             >
-              <Input
-                onChange={(e) => {
-                  setForm2Input({ ...form2Input, number: e.target.value });
-                }}
-              />
+              <Input />
             </Form.Item>
             <Form.Item
               label="Home Address"
@@ -316,20 +296,58 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
                 },
               ]}
             >
-              <Input
-                onChange={(e) => {
-                  setForm2Input({ ...form2Input, address: e.target.value });
-                }}
-              />
+              <Input />
             </Form.Item>
           </Space>
+          <Typography.Title level={3}>Due Dates</Typography.Title>
+          <Form.Item
+            label="Yearly Due"
+            name="yearlyDueDate"
+            rules={[{ required: true, message: "Yearly Due is empty" }]}
+          >
+            <DatePicker
+              size="large"
+              format="MMMM DD, YYYY"
+              style={{
+                width: 300,
+              }}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Monthly Due"
+            name="monthlyDueDate"
+            rules={[{ required: true, message: "Monthly Due is empty" }]}
+          >
+            <DatePicker
+              size="large"
+              format="MMMM DD, YYYY"
+              style={{
+                width: 300,
+              }}
+            />
+          </Form.Item>
         </Form>
-      );
+      </>
+    );
   };
+
+  useEffect(() => {
+    if (step == 0) form1.setFieldsValue({ ...user, password: null });
+    if (step == 1)
+      form2.setFieldsValue({
+        ...user?.homeownerId,
+        yearlyDueDate: dayjs(user?.homeownerId?.yearlyDueDate),
+        monthlyDueDate: dayjs(user?.homeownerId?.monthlyDueDate),
+      });
+  }, [step, open]);
 
   return (
     <Modal
-      title="New Home Owner registration"
+      title={
+        <Typography.Title level={4}>
+          {user ? "Update Homeowner" : "New Home Owner registration"}
+        </Typography.Title>
+      }
       open={open}
       width={900}
       onCancel={cls}
@@ -348,6 +366,7 @@ const NewHomeOwner = ({ open, close }: NewHomeownerCardProps) => {
           direction="vertical"
           size="small"
           current={step}
+          onChange={user ? setStep : undefined}
           style={{
             width: 120,
           }}

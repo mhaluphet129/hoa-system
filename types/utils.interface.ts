@@ -6,6 +6,9 @@ export interface Response {
 
 export interface ExtendedResponse<T> extends Response {
   data?: T;
+  meta?: {
+    total: number;
+  };
 }
 
 export interface CheckStakeholderProps {

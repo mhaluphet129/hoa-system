@@ -1,15 +1,14 @@
 import mongoose from "mongoose";
+import "@/database/models/category.schema";
+import "@/database/models/user_homeowner.schema";
 
 const TransactionSchema = new mongoose.Schema(
   {
-    userId: {
+    homeownerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "HomeOwner",
     },
-    dateCollected: {
-      type: Date,
-      required: true,
-    },
+    dateCollected: Date,
     collectedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Staff",
@@ -17,11 +16,15 @@ const TransactionSchema = new mongoose.Schema(
     paymentType: {
       type: String,
       enum: ["cash", "cheque"],
-      default: "cash",
     },
     categorySelected: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
     ],
+    status: {
+      type: String,
+      enum: ["completed", "pending"],
+      default: "pending",
+    },
   },
   {
     timestamps: true,

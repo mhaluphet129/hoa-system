@@ -24,6 +24,7 @@ class API {
         };
       });
     }
+
     const request = await axios.get(`/api/${endpoint}`, {
       params: query,
       headers: {

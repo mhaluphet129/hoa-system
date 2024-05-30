@@ -35,7 +35,13 @@ const HomeOwner = ({
   setKey: any;
   customKey: string;
 }) => {
-  const [openNewHomeowner, setOpenNewHomeowner] = useState(false);
+  const [openNewHomeowner, setOpenNewHomeowner] = useState<{
+    open: boolean;
+    user: User | null;
+  }>({
+    open: false,
+    user: null,
+  });
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [trigger, setTrigger] = useState(0);
@@ -110,16 +116,34 @@ const HomeOwner = ({
             />
           </Tooltip>
           <Tooltip title="Edit">
-            <Button icon={<EditOutlined />} />
+            <Button
+              icon={<EditOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                setOpenNewHomeowner({ open: true, user });
+              }}
+            />
           </Tooltip>
           <Tooltip title="Delete">
             <Popconfirm
               title="Are you sure you want to delete this homeowner?"
               okText="Delete"
               okType="danger"
-              onConfirm={() => handleDelete(user?._id ?? "")}
+              onConfirm={(e) => {
+                e?.stopPropagation();
+                e?.preventDefault();
+                handleDelete(user?._id ?? "");
+              }}
             >
-              <Button icon={<DeleteOutlined />} danger />
+              <Button
+                icon={<DeleteOutlined />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+                danger
+              />
             </Popconfirm>
           </Tooltip>
         </Space>
@@ -139,7 +163,7 @@ const HomeOwner = ({
 
   useEffect(() => {
     (async (_) => {
-      let res = await _.getUsers("homeowner");
+      let res = await _.getUsers({ type: "homeowner" });
       if (res.success) {
         setUsers(res?.data ?? []);
       }
@@ -172,7 +196,7 @@ const HomeOwner = ({
             />
             <Button
               icon={<PlusOutlined />}
-              onClick={() => setOpenNewHomeowner(true)}
+              onClick={() => setOpenNewHomeowner({ open: true, user: null })}
             >
               Add New Homeowner
             </Button>
@@ -230,8 +254,8 @@ const HomeOwner = ({
 
       {/* context */}
       <NewHomeOwner
-        open={openNewHomeowner}
-        close={() => setOpenNewHomeowner(false)}
+        {...openNewHomeowner}
+        close={() => setOpenNewHomeowner({ open: false, user: null })}
       />
     </Spin>
   );

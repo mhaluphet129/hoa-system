@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Steps,
   Modal,
@@ -17,7 +17,7 @@ import bcrypt from "bcryptjs";
 import { NewStaffCardProps, Staff } from "@/types";
 import { RegistrationService, UserService } from "@/services";
 
-const NewHomeOwner = ({ open, close, refresh }: NewStaffCardProps) => {
+const NewHomeOwner = ({ open, close, refresh, user }: NewStaffCardProps) => {
   const [step, setStep] = useState(0);
   const [staffId, setStaffId] = useState("");
 
@@ -29,7 +29,7 @@ const NewHomeOwner = ({ open, close, refresh }: NewStaffCardProps) => {
   const nextStep = () => setStep(step + 1);
 
   const register = new RegistrationService();
-  const user = new UserService();
+  const userService = new UserService();
 
   const [form1] = Form.useForm();
   const [form2] = Form.useForm();
@@ -51,20 +51,44 @@ const NewHomeOwner = ({ open, close, refresh }: NewStaffCardProps) => {
             await form1.validateFields().then(() => form1.submit());
           }}
         >
-          Next
+          {user ? "UPDATE" : "NEXT"}
         </Button>
       );
     } else
       return (
-        <Button type="primary" onClick={handleUpdateUser}>
-          Save & Close
+        <Button
+          type="primary"
+          onClick={async () =>
+            await form2.validateFields().then(() => form2.submit())
+          }
+        >
+          {user ? "UPDATE" : "Save & Close"}
         </Button>
       );
   };
 
   const handleNewUser = async (val: any) => {
+    if (user) {
+      let obj = {
+        username: form1.getFieldValue("username"),
+        password: "",
+      };
+
+      if (!["", null, undefined].includes(form1.getFieldValue("password"))) {
+        obj.password = await bcrypt.hash(form1.getFieldValue("password"), 8);
+      }
+
+      if (obj.password == "") delete (obj as any).password;
+      await userService.updateUser(user?._id ?? "", obj).then((e) => {
+        if (e.success) {
+          message.success(e.message ?? "Success");
+        }
+      });
+      return;
+    }
+
     val.password = await bcrypt.hash(val.password, 8);
-    await user.createUser({ ...val, type: "staff" }).then((e) => {
+    await userService.createUser({ ...val, type: "staff" }).then((e) => {
       if (e.success) {
         if (e?.data?._id) setStaffId(e?.data?._id);
         refresh();
@@ -76,18 +100,21 @@ const NewHomeOwner = ({ open, close, refresh }: NewStaffCardProps) => {
     });
   };
 
-  const handleUpdateUser = async () => {
-    let val: Staff = {
-      name: form2Input.name,
-      phone: form2Input.number,
-      role: "admin",
-    };
+  const handleUpdateUser = async (aga: any) => {
+    if (user) {
+      await register
+        .updateStaff(user?.staffId?._id ?? "", form2.getFieldsValue())
+        .then((e) => {
+          message.success(e.message);
+        });
+      return;
+    }
 
     await register
-      .newStaff(val)
+      .newStaff(aga)
       .then(async (e) => {
-        await user
-          .updateUser({ id: staffId, staffId: e.data?._id ?? "" })
+        await userService
+          .updateUser(staffId, { staffId: e.data?._id ?? "" })
           .then((_) => {
             if (_.success) {
               refresh();
@@ -102,9 +129,14 @@ const NewHomeOwner = ({ open, close, refresh }: NewStaffCardProps) => {
   };
 
   const getBodyByStep = () => {
-    if (step == 0) {
-      return (
-        <Form layout="vertical" form={form1} onFinish={handleNewUser}>
+    return (
+      <>
+        <Form
+          layout="vertical"
+          form={form1}
+          onFinish={handleNewUser}
+          style={{ display: step == 0 ? "block" : "none" }}
+        >
           <Form.Item label="Username" name="username">
             <Input
               suffix={<MailOutlined />}
@@ -117,7 +149,9 @@ const NewHomeOwner = ({ open, close, refresh }: NewStaffCardProps) => {
           <Form.Item
             label="Password"
             name="password"
-            rules={[{ required: true, message: "Password is empty" }]}
+            rules={[
+              { required: user ? false : true, message: "Password is empty" },
+            ]}
           >
             <Input.Password
               suffix={<MailOutlined />}
@@ -142,14 +176,12 @@ const NewHomeOwner = ({ open, close, refresh }: NewStaffCardProps) => {
             />
           </Form.Item>
         </Form>
-      );
-    } else
-      return (
         <Form
           layout="vertical"
           className="MyForm"
           form={form2}
-          // onFinish={handleUpdateUser}
+          style={{ display: step == 1 ? "block" : "none" }}
+          onFinish={handleUpdateUser}
         >
           <Form.Item
             label="Name"
@@ -202,13 +234,21 @@ const NewHomeOwner = ({ open, close, refresh }: NewStaffCardProps) => {
             />
           </Form.Item>
         </Form>
-      );
+      </>
+    );
   };
+
+  useEffect(() => {
+    if (step == 0) form1.setFieldsValue({ ...user, password: null });
+    if (step == 1) form2.setFieldsValue(user?.staffId);
+  }, [step, open]);
 
   return (
     <Modal
       title={
-        <Typography.Title level={2}>New Staff Registration</Typography.Title>
+        <Typography.Title level={4}>
+          {user ? "Update Staff" : "New Staff Registration"}
+        </Typography.Title>
       }
       open={open}
       width={900}
@@ -228,6 +268,7 @@ const NewHomeOwner = ({ open, close, refresh }: NewStaffCardProps) => {
           direction="vertical"
           size="small"
           current={step}
+          onChange={user ? setStep : undefined}
           style={{
             width: 120,
           }}

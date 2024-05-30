@@ -14,9 +14,70 @@ async function handler(
   const { method } = req;
 
   if (method === "GET") {
-    const { type } = req.query;
-    return await User.find(type ? { type } : {})
-      .populate("homeownerId staffId treasurerId")
+    const { type, search } = req.query;
+    let query = [];
+
+    var re;
+
+    if (search && search != "") {
+      re = new RegExp(search!.toString().trim(), "i");
+      query.push({
+        $or: [
+          { "homeownerId.name": { $regex: re } },
+          { "homeownerId.lastname": { $regex: re } },
+        ],
+      });
+    }
+
+    if (type) query.push({ type });
+
+    return await User.aggregate([
+      { $match: {} },
+      {
+        $lookup: {
+          from: "homeowners",
+          localField: "homeownerId",
+          foreignField: "_id",
+          as: "homeownerId",
+        },
+      },
+      {
+        $unwind: {
+          path: "$homeownerId",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "staffs",
+          localField: "staffId",
+          foreignField: "_id",
+          as: "staffId",
+        },
+      },
+      {
+        $unwind: {
+          path: "$staffId",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "treasurers",
+          localField: "treasurerId",
+          foreignField: "_id",
+          as: "treasurerId",
+        },
+      },
+      {
+        $unwind: {
+          path: "$treasurerId",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      ...(query.length > 0 ? [{ $match: { $and: query } }] : []),
+    ])
+
       .then((e) =>
         res.json({ code: 200, success: true, data: e as UserType[] })
       )
