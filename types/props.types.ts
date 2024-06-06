@@ -6,8 +6,6 @@ import {
 } from "./schema.interface";
 import { UserType, Homeowner, Staff, User } from "./user.interface";
 
-export type NotificationStatus = "due" | "pending" | "completed";
-
 export type SelectImageProps = {
   setSelectedFile: (file: File | null) => void;
   selectedFile: File | null;
