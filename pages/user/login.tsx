@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Card, Alert, message } from "antd";
+import {
+  Form,
+  Input,
+  Button,
+  Card,
+  Alert,
+  message,
+  Image,
+  Flex,
+  Typography,
+} from "antd";
 import Cookies from "js-cookie";
 import bcrypt from "bcryptjs";
 import {
@@ -7,6 +17,7 @@ import {
   EyeOutlined,
   EyeInvisibleOutlined,
 } from "@ant-design/icons";
+import { FaLocationPin } from "react-icons/fa6";
 
 import { verify } from "@/assets/js";
 import {
@@ -133,21 +144,64 @@ const Login = ({ private_key }: { private_key: string }) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        flexDirection: "column",
+        gap: "1em",
       }}
     >
+      <Typography.Link
+        href="https://maps.app.goo.gl/dvLtzgaJh9DynasBA"
+        target="_blank"
+        className="login-location-text"
+        style={{
+          position: "absolute",
+          display: "flex",
+          gap: 5,
+          left: 5,
+          top: 5,
+          color: "#fff",
+          fontSize: "1.15em",
+        }}
+      >
+        <FaLocationPin style={{ marginTop: 3 }} />
+        945: Masterson Ave, Cagayan de Oro, Philippines
+      </Typography.Link>
+      <Flex justify="center" align="center" vertical>
+        {/* flag: Login Image */}
+        <Image
+          preview={false}
+          src="/web-logo.jpg"
+          width={200}
+          style={{
+            borderRadius: "100%",
+            boxShadow: "0px 5px 10px rgba(0, 0, 0, 0.5)",
+          }}
+        />
+        <span
+          style={{
+            fontFamily: "abel",
+            fontSize: "2em",
+            color: "#fff",
+            textShadow: "0 0 5px rgba(0, 0, 0, 0.5)",
+          }}
+        >
+          Welcome to VVVHOA Portal Login Portal
+        </span>
+      </Flex>
       <Card
         style={{
-          width: "30vw",
-          minHeight: "50vh",
+          width: "25vw",
+          minHeight: "40vh",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
         }}
+        styles={{
+          body: {
+            padding: "2.5em",
+          },
+        }}
         hoverable
       >
-        <span style={{ fontFamily: "abel", fontSize: "2em", color: "#212B36" }}>
-          Sign In to Vista Verde Village
-        </span>
         {error.isError && (
           <Alert
             type="warning"

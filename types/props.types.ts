@@ -48,12 +48,6 @@ export interface PaginationProps {
   total?: number;
 }
 
-export interface NotificationCardProps {
-  title: string;
-  status: NotificationStatus;
-  description: string;
-}
-
 export interface ConcernDetalsCardProps {
   open: boolean;
   close: () => void;

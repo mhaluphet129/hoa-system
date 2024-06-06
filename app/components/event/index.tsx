@@ -7,10 +7,11 @@ import {
   Button,
   Typography,
   message,
+  Flex,
 } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 
 import { PaginationProps, AnnouncementProps, Event } from "@/types";
-
 import { useUserStore } from "@/services/context";
 
 import jason from "@/assets/json/constants.json";
@@ -83,36 +84,50 @@ const StaffEvent: React.FC = () => {
           flexDirection: "column",
         }}
       >
-        <div style={{ alignSelf: "self-start" }}>
-          <span style={{ marginRight: 25 }}>Filter:</span>
-          <Space wrap>
-            <Select
-              // defaultValue={filter.year}
-              style={{ width: 120 }}
-              onChange={(e) => setFilter({ ...filter, year: e })}
-              options={Array(100)
-                .fill(0)
-                .map((_, i) => {
-                  return {
-                    label: new Date().getFullYear(),
-                    value: new Date().getFullYear() - i,
-                  };
-                })}
-              placeholder="Year"
-            />
-            <Select
-              // defaultValue={filter.year}
-              style={{ width: 120 }}
-              onChange={(e) => setFilter({ ...filter, year: e })}
-              options={jason.months.map((_, i) => {
-                return {
-                  label: _,
-                  value: i,
-                };
-              })}
-              placeholder="Month"
-            />
-          </Space>
+        <div style={{ width: "100%", display: "block" }}>
+          <Flex justify="space-between" align="center">
+            <div>
+              <span style={{ marginRight: 25 }}>Filter:</span>
+              <Space>
+                <Select
+                  // defaultValue={filter.year}
+                  style={{ width: 120 }}
+                  onChange={(e) => setFilter({ ...filter, year: e })}
+                  options={Array(100)
+                    .fill(0)
+                    .map((_, i) => {
+                      return {
+                        label: new Date().getFullYear(),
+                        value: new Date().getFullYear() - i,
+                      };
+                    })}
+                  placeholder="Year"
+                />
+                <Select
+                  // defaultValue={filter.year}
+                  style={{ width: 120 }}
+                  onChange={(e) => setFilter({ ...filter, year: e })}
+                  options={jason.months.map((_, i) => {
+                    return {
+                      label: _,
+                      value: i,
+                    };
+                  })}
+                  placeholder="Month"
+                />
+              </Space>
+            </div>
+            {currentUser?.type != "homeowner" && (
+              <Button
+                icon={<PlusOutlined />}
+                size="large"
+                type="primary"
+                onClick={() => setOpenNewAnnouncement(true)}
+              >
+                New Events
+              </Button>
+            )}
+          </Flex>
         </div>
         <Space
           style={{

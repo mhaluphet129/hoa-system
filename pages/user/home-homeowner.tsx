@@ -18,6 +18,8 @@ import Dashboard from "@/app/components/dashboard";
 import HOTransacDetails from "@/app/components/homeowner/components/homeowner_transaction_details";
 
 import { useUserStore } from "@/services/context";
+import { Notification as NotifProp } from "@/types";
+import { NotificationService } from "@/services/notification.service";
 
 const selectedItemsStyle = {
   color: "#DEE4EE",
@@ -28,14 +30,25 @@ const selectedItemsStyle = {
 
 const HomeOwner: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState("dashboard");
+  const [notifs, setNotifs] = useState<NotifProp[]>([]);
 
   const { currentUser } = useUserStore();
+  const notif = new NotificationService();
 
   useEffect(() => {
     message.info({
       content: `Welcome ${currentUser?.homeownerId?.name} ${currentUser?.homeownerId?.lastname}`,
       icon: null,
     });
+
+    (async (_) => {
+      let res = await _.getNotif({
+        userId: currentUser?._id,
+        type: ["events", "due"],
+      });
+
+      if (res?.success ?? false) setNotifs(res?.data ?? []);
+    })(notif);
   }, []);
 
   return (
@@ -60,20 +73,22 @@ const HomeOwner: React.FC = () => {
               label: (
                 <>
                   <span className="ant-menu-title-content">Notifications</span>{" "}
-                  <span
-                    style={{
-                      color: "#fff",
-                      background: "#3C50E0",
-                      borderRadius: 2,
-                      padding: 4,
-                      width: 20,
-                      height: 20,
-                      fontSize: ".65em",
-                      textAlign: "center",
-                    }}
-                  >
-                    5
-                  </span>
+                  {notifs.length != 0 && (
+                    <span
+                      style={{
+                        color: "#fff",
+                        background: "#3C50E0",
+                        borderRadius: 2,
+                        padding: 4,
+                        width: 20,
+                        height: 20,
+                        fontSize: ".65em",
+                        textAlign: "center",
+                      }}
+                    >
+                      {notifs.length}
+                    </span>
+                  )}
                 </>
               ),
               key: "notification",
@@ -162,7 +177,9 @@ const HomeOwner: React.FC = () => {
             ) : null}
             {selectedKey == "event" ? <Event /> : null}
             {selectedKey == "concern" ? <Concern /> : null}
-            {selectedKey == "notification" ? <Notification /> : null}
+            {selectedKey == "notification" ? (
+              <Notification notifications={notifs} />
+            ) : null}
             {selectedKey == "calendar" ? <Calendar /> : null}
             {selectedKey == "due" ? <Dues /> : null}
             {selectedKey == "list of record" ? (

@@ -19,6 +19,8 @@ import Dues from "@/app/components/dues";
 import Dashboard from "@/app/components/dashboard";
 import CollectionCategories from "@/app/components/collection";
 import { useUserStore } from "@/services/context";
+import { Notification as NotifProp } from "@/types";
+import { NotificationService } from "@/services/notification.service";
 
 const selectedItemsStyle = {
   color: "#DEE4EE",
@@ -29,14 +31,22 @@ const selectedItemsStyle = {
 
 const Staff: React.FC = () => {
   const [selectedKey, setSelectedKey] = useState("dashboard");
+  const [notifs, setNotifs] = useState<NotifProp[]>([]);
 
   const { currentUser } = useUserStore();
+  const notif = new NotificationService();
 
   useEffect(() => {
     message.info({
       content: `Welcome ${currentUser?.staffId?.name}`,
       icon: null,
     });
+
+    (async (_) => {
+      let res = await _.getNotif({ userId: currentUser?._id });
+
+      if (res?.success ?? false) setNotifs(res?.data ?? []);
+    })(notif);
   }, []);
 
   return (
@@ -61,20 +71,22 @@ const Staff: React.FC = () => {
               label: (
                 <>
                   <span className="ant-menu-title-content">Notifications</span>{" "}
-                  <span
-                    style={{
-                      color: "#fff",
-                      background: "#3C50E0",
-                      borderRadius: 2,
-                      padding: 4,
-                      width: 20,
-                      height: 20,
-                      fontSize: ".65em",
-                      textAlign: "center",
-                    }}
-                  >
-                    5
-                  </span>
+                  {notifs.length != 0 && (
+                    <span
+                      style={{
+                        color: "#fff",
+                        background: "#3C50E0",
+                        borderRadius: 2,
+                        padding: 4,
+                        width: 20,
+                        height: 20,
+                        fontSize: ".65em",
+                        textAlign: "center",
+                      }}
+                    >
+                      {notifs.length}
+                    </span>
+                  )}
                 </>
               ),
               key: "notification",
@@ -172,7 +184,9 @@ const Staff: React.FC = () => {
             {selectedKey == "announcement" ? <Announcement /> : null}
             {selectedKey == "event" ? <Event /> : null}
             {selectedKey == "concern" ? <Concern /> : null}
-            {selectedKey == "notification" ? <Notification /> : null}
+            {selectedKey == "notification" ? (
+              <Notification notifications={notifs} />
+            ) : null}
             {selectedKey == "calendar" ? <Calendar /> : null}
             {selectedKey.startsWith("homeowner") ? (
               <HomeOwner setKey={setSelectedKey} customKey={selectedKey} />

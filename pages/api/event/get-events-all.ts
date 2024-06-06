@@ -18,6 +18,12 @@ async function handler(
           path: "staffId",
         },
       })
+      .populate({
+        path: "staffId",
+        populate: {
+          path: "treasurerId",
+        },
+      })
       .then((doc) =>
         res.json({
           code: 200,

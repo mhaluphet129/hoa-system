@@ -1,5 +1,16 @@
 @import url("https://fonts.googleapis.com/css2?family=Abel&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap");
+
+.login-container {
+  background-image: url("/main-content-img.png");
+  background-size: cover;
+}
+
+.login-location-text:hover {
+  cursor: pointer;
+  text-decoration: underline !important;
+}
 
 .remove-padding-modal .ant-modal-content {
   padding: 5px;

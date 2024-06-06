@@ -1,5 +1,5 @@
 import { Transaction } from "./props.types";
-import { Homeowner } from "./user.interface";
+import { Homeowner, User } from "./user.interface";
 
 export type CategoryStatus = "active" | "inactive";
 export type CategoryType = "due" | "service";
@@ -39,4 +39,23 @@ export interface HomeownerColumn {
 export interface DashboardData {
   homeowners: HomeownerColumn[];
   transaction: Transaction[];
+}
+
+// * Notification
+
+export type NotificationType = "due" | "events";
+export type NotificationStatus = "error" | "pending" | "success";
+export interface Notification {
+  type: NotificationType;
+  status: NotificationStatus;
+  userId: User;
+  title: string;
+  sub_title: string;
+  description: string;
+  extra?: Record<any, any>;
+}
+
+export interface NotificationData extends Notification {
+  _id: string;
+  createdAt: Date;
 }

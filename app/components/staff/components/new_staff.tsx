@@ -17,7 +17,7 @@ import bcrypt from "bcryptjs";
 import { NewStaffCardProps, Staff } from "@/types";
 import { RegistrationService, UserService } from "@/services";
 
-const NewHomeOwner = ({ open, close, refresh, user }: NewStaffCardProps) => {
+const NewStaff = ({ open, close, refresh, user }: NewStaffCardProps) => {
   const [step, setStep] = useState(0);
   const [staffId, setStaffId] = useState("");
 
@@ -288,4 +288,4 @@ const NewHomeOwner = ({ open, close, refresh, user }: NewStaffCardProps) => {
   );
 };
 
-export default NewHomeOwner;
+export default NewStaff;

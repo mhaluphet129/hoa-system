@@ -4,6 +4,7 @@ import Header from "./header";
 import Home from "./content/home";
 import AboutUs from "./content/about_us";
 import Location from "./content/location";
+import Amenities from "./content/amenities";
 
 const Content = () => {
   const [activeKey, setActiveKey] = useState<
@@ -18,6 +19,7 @@ const Content = () => {
           {activeKey == "home" ? <Home /> : null}
           {activeKey == "ab" ? <AboutUs /> : null}
           {activeKey == "loc" ? <Location /> : null}
+          {activeKey == "amen" ? <Amenities /> : null}
         </div>
       </div>
 

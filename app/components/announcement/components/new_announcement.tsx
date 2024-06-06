@@ -101,7 +101,9 @@ const StaffNewAnnouncement = ({
         clear();
       }}
       closable={false}
-      okText="Add"
+      okText="ADD"
+      okButtonProps={{ size: "large" }}
+      cancelButtonProps={{ size: "large" }}
       width={900}
       onOk={form.submit}
       destroyOnClose

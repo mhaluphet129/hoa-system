@@ -15,7 +15,7 @@ const EventCard = ({ ...props }: Event) => {
         hoverable
         style={{ width: 220 }}
         cover={
-          props.images ? (
+          props.images.length > 0 ? (
             <img
               alt="example"
               src={props.images[0]}
@@ -25,8 +25,8 @@ const EventCard = ({ ...props }: Event) => {
             <Watermark content="No Image">
               <div
                 style={{
-                  width: 220,
-                  height: 220,
+                  width: 250,
+                  height: 245,
                 }}
               />
             </Watermark>

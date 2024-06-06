@@ -4,14 +4,22 @@ import { Space, Table, TableColumnsType, Tag } from "antd";
 import { Category, Transaction } from "@/types";
 import dayjs from "dayjs";
 import { StaffService } from "@/services";
+import { useUserStore } from "@/services/context";
 
 const DueDates = () => {
   const [dues, setDues] = useState<Transaction[]>([]);
+  const { currentUser } = useUserStore();
 
   const staff = new StaffService();
 
   const getDues = async () =>
-    await staff.getDues().then((e) => setDues(e.data ?? []));
+    await staff
+      .getDues(
+        currentUser?.type == "homeowner"
+          ? { homeownerId: currentUser?.homeownerId?._id }
+          : {}
+      )
+      .then((e) => setDues(e.data ?? []));
 
   const generateName = (first: string, last: string) =>
     first[0].toLocaleUpperCase() +

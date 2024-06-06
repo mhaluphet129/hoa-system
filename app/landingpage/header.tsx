@@ -5,14 +5,13 @@ const Header = ({
   active: "home" | "new" | "amen" | "loc" | "ab";
   setActive: (s: "home" | "new" | "amen" | "loc" | "ab") => void;
 }) => {
-  let activeName =
-    "border-b-[#FC621C4C] border-l-[#FC621C4C] border-r-[#55cc77] border-t-[#55cc77] rounded";
+  let activeName = "border-b-[#FC621C4C] border-2"; //border-l-[#FC621C4C] border-r-[#55cc77] border-t-[#55cc77] rounded
   return (
     <div className="flex items-center justify-between p-10 mx-40">
       <img src="/logo.jpg" width="150px" />
       <ul className="flex gap-10">
         <li
-          className={`p-4 font-bold border border-transparent cursor-pointer hover:border-b-[#FC621C4C] ${
+          className={`p-4 font-bold border-2 border-transparent cursor-pointer hover:border-b-[#FC621C4C] ${
             active == "home" ? activeName : ""
           }`}
           onClick={() => setActive("home")}
@@ -20,7 +19,7 @@ const Header = ({
           HOME
         </li>
         <li
-          className={`p-4 font-bold border border-transparent cursor-pointer hover:border-b-[#FC621C4C] ${
+          className={`p-4 font-bold border-2 border-transparent cursor-pointer hover:border-b-[#FC621C4C] ${
             active == "new" ? activeName : ""
           }`}
           onClick={() => setActive("new")}
@@ -28,7 +27,7 @@ const Header = ({
           NEW
         </li>
         <li
-          className={`p-4 font-bold border border-transparent cursor-pointer hover:border-b-[#FC621C4C] ${
+          className={`p-4 font-bold border-2 border-transparent cursor-pointer hover:border-b-[#FC621C4C] ${
             active == "amen" ? activeName : ""
           }`}
           onClick={() => setActive("amen")}
@@ -36,7 +35,7 @@ const Header = ({
           AMENITIES
         </li>
         <li
-          className={`p-4 font-bold border border-transparent cursor-pointer hover:border-b-[#FC621C4C] ${
+          className={`p-4 font-bold border-2 border-transparent cursor-pointer hover:border-b-[#FC621C4C] ${
             active == "loc" ? activeName : ""
           }`}
           onClick={() => setActive("loc")}
@@ -44,7 +43,7 @@ const Header = ({
           LOCATION
         </li>
         <li
-          className={`p-4 font-bold border border-transparent cursor-pointer hover:border-b-[#FC621C4C] ${
+          className={`p-4 font-bold border-2 border-transparent cursor-pointer hover:border-b-[#FC621C4C] ${
             active == "ab" ? activeName : ""
           }`}
           onClick={() => setActive("ab")}
@@ -53,7 +52,7 @@ const Header = ({
         </li>
       </ul>
       <a
-        className="px-6 py-2 font-semibold border border-black rounded text-1xl hover:bg-[#eee] hover:cursor-pointer"
+        className="px-8 py-4 font-semibold border border-black rounded text-1xl hover:bg-[#eee] hover:cursor-pointer"
         href="/user/login"
       >
         Login

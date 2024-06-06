@@ -132,7 +132,6 @@ const Staff = () => {
     (async (_) => {
       let res = await _.getUsers({ type: "staff" });
       if (res?.success ?? false) {
-        console.log(res?.data);
         setUsers(res?.data ?? []);
       }
     })(user);

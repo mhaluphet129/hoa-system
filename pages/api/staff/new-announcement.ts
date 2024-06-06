@@ -1,5 +1,6 @@
 import dbConnect from "@/database/dbConnect";
 import Announcement from "@/database/models/announcement.schema";
+import Notification from "@/database/models/notification.schema";
 import { ExtendedResponse, Event } from "@/types";
 
 import type { NextApiRequest, NextApiResponse } from "next";
@@ -13,7 +14,13 @@ async function handler(
 
   if (method === "POST") {
     return await Announcement.create(req.body)
-      .then((e) => {
+      .then(async (e) => {
+        await Notification.create({
+          type: "events",
+          title: req.body.title,
+          description: req.body.description,
+          status: "pending",
+        });
         return res.json({
           code: 200,
           success: true,

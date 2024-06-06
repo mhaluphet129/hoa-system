@@ -8,7 +8,6 @@ import {
   Card,
   Col,
   Row,
-  Select,
   Spin,
   Table,
   TableColumnsType,
@@ -19,7 +18,6 @@ import { Chart as ChartJS, ArcElement, Tooltip, Title } from "chart.js";
 
 ChartJS.register(ArcElement, Tooltip, Title);
 
-import jason from "@/assets/json/constants.json";
 import dayjs from "dayjs";
 import Notification from "../notification";
 import {
@@ -28,15 +26,18 @@ import {
   AnnouncementDetailsProps,
   User,
   Transaction,
+  Notification as Notif,
 } from "@/types";
 import { EventService, UtilService, UserService } from "@/services";
 import { useUserStore } from "@/services/context";
 import AnnouncementDetails from "../announcement_details";
 import DueDates from "../dues/due_dates";
+import { NotificationService } from "@/services/notification.service";
 
 const Dashboard = () => {
   const [homeowners, setHomeowners] = useState<HomeownerColumn[]>([]);
   const [transaction, setTransaction] = useState<Transaction[]>([]);
+  const [notifs, setNotifs] = useState<Notif[]>([]);
   const [staffs, setStaffs] = useState<User[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(false);
@@ -51,6 +52,7 @@ const Dashboard = () => {
   const util = new UtilService();
   const event = new EventService();
   const user = new UserService();
+  const notif = new NotificationService();
 
   const homeownerColumn: TableColumnsType<HomeownerColumn> = [
     {
@@ -112,7 +114,10 @@ const Dashboard = () => {
     },
     {
       title: "Posted By",
-      render: (_, { staffId }) => `${(staffId as any).staffId.name}`,
+      render: (_, { staffId }) =>
+        (staffId as any).staffId
+          ? `${(staffId as any).staffId.name}`
+          : `${(staffId as any).treasurerId.name}`,
     },
   ];
 
@@ -147,6 +152,18 @@ const Dashboard = () => {
       let res = await _.getUsers({ type: "staff" });
       if (res?.success ?? false) setStaffs(res?.data ?? []);
     })(user);
+
+    (async (_) => {
+      let res = await _.getNotif(
+        currentUser?.type == "homeowner"
+          ? {
+              userId: currentUser._id,
+            }
+          : {}
+      );
+
+      if (res?.success ?? false) setNotifs(res?.data ?? []);
+    })(notif);
 
     setLoading(false);
   }, []);
@@ -280,7 +297,7 @@ const Dashboard = () => {
               />
             </Card>
           </Col>
-          {["treasurer", "staff"].includes(role!) && (
+          {["treasurer", "staff", "homeowner"].includes(role!) && (
             <Col span={8}>
               <Card
                 styles={{
@@ -312,7 +329,7 @@ const Dashboard = () => {
               </Card>
             </Col>
           )}
-          {role == "staff" && (
+          {["staff", "homeowner"].includes(role!) && (
             <>
               <Col span={8}>
                 <Card
@@ -341,7 +358,7 @@ const Dashboard = () => {
                   }
                   hoverable
                 >
-                  <Notification />
+                  <Notification notifications={notifs} />
                 </Card>
               </Col>
             </>

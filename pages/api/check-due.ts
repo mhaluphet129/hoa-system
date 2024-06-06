@@ -2,8 +2,11 @@ import dbConnect from "@/database/dbConnect";
 import Homeowner from "@/database/models/user_homeowner.schema";
 import Category from "@/database/models/category.schema";
 import Transaction from "@/database/models/transaction.schema";
+import Notification from "@/database/models/notification.schema";
 import { ExtendedResponse } from "@/types";
 import type { NextApiRequest, NextApiResponse } from "next";
+
+import "@/database/models/notification.schema";
 
 async function handler(
   req: NextApiRequest,
@@ -111,30 +114,129 @@ async function handler(
           preserveNullAndEmptyArrays: true,
         },
       },
-      // {
-      //   $unwind: {
-      //     path: "$yearlyDue",
-      //     preserveNullAndEmptyArrays: true,
-      //   },
-      // },
+      {
+        $unwind: {
+          path: "$yearlyDue",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
     ]);
-    console.log(homeowners);
-    // homeowners.map(async (e) => {
-    //   if (!e.monthlyDue) {
-    //     await Transaction.create({
-    //       userId: e._id,
-    //       categorySelected: [monthlyId],
-    //       dateCollected: e.monthlyDueDate,
-    //     });
-    //   }
-    //   if (!e.yearlyDue) {
-    //     await Transaction.create({
-    //       userId: e._id,
-    //       categorySelected: [yearlyId],
-    //       dateCollected: e.yearlyDueDate,
-    //     });
-    //   }
-    // });
+
+    homeowners.map(async (e) => {
+      if (!e.monthlyDue) {
+        await Transaction.create({
+          homeownerId: e._id,
+          categorySelected: [monthlyId],
+          dateCollected: e.monthlyDueDate,
+        });
+      }
+      if (!e.yearlyDue) {
+        await Transaction.create({
+          homeownerId: e._id,
+          categorySelected: [yearlyId],
+          dateCollected: e.yearlyDueDate,
+        });
+      }
+    });
+
+    let transactions = await Transaction.aggregate([
+      {
+        $match: { status: "pending", dateCollected: { $lte: new Date() } },
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "categorySelected",
+          foreignField: "_id",
+          as: "categorySelected",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "homeownerId",
+          foreignField: "homeownerId",
+          pipeline: [
+            {
+              $lookup: {
+                from: "homeowners",
+                localField: "homeownerId",
+                foreignField: "_id",
+                as: "homeownerId",
+              },
+            },
+            {
+              $unwind: "$homeownerId",
+            },
+            {
+              $set: {
+                name: {
+                  $concat: ["$homeownerId.name", " ", "$homeownerId.lastname"],
+                },
+              },
+            },
+            {
+              $project: {
+                name: 1,
+                _id: 1,
+              },
+            },
+          ],
+          as: "userId",
+        },
+      },
+      {
+        $unwind: {
+          path: "$userId",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $set: {
+          name: "$userId.name",
+          userId: "$userId._id",
+        },
+      },
+      {
+        $lookup: {
+          from: "notications",
+          localField: "userId",
+          foreignField: "userId",
+          as: "notifications",
+        },
+      },
+      {
+        $unwind: {
+          path: "$notifications",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ]);
+
+    transactions.map(async (e) => {
+      if (!e.notifications) {
+        await Notification.create({
+          type: "due",
+          title: "Due",
+          description: `You have due balance to pay for ${e.categorySelected
+            .map((e: any) => e.category)
+            .join(", ")}.`,
+          userId: e.userId,
+          status: "error",
+        });
+
+        await Notification.create({
+          type: "due",
+          title: "Due",
+          description: `${
+            e.name
+          } exceed the date to pay the due balances for the ${e.categorySelected
+            .map((e: any) => e.category)
+            .join(", ")}.`,
+          status: "error",
+        });
+      }
+    });
 
     return res.json({
       code: 200,

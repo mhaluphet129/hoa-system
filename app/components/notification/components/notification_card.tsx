@@ -1,15 +1,17 @@
-import { NotificationCardProps } from "@/types";
+import { Notification } from "@/types";
 import { Typography } from "antd";
 
 const NotificationCard = ({
-  title,
+  type,
   status,
+  title,
   description,
-}: NotificationCardProps) => {
+  sub_title,
+}: Notification) => {
   const getColor = () => {
-    if (status == "due") return "#f00";
-    else if (status == "pending") return "#A6B9FF";
-    else return "#28a745";
+    if (status == "error") return "#f00";
+    else if (status == "success") return "#28a745";
+    else return "#A6B9FF";
   };
 
   return (
@@ -17,7 +19,6 @@ const NotificationCard = ({
       style={{
         display: "flex",
         background: "#fff",
-        width: 300,
       }}
     >
       <div
@@ -26,13 +27,19 @@ const NotificationCard = ({
           width: 15,
         }}
       />
-      <div style={{ marginLeft: 10 }}>
+      <div style={{ paddingLeft: 25, paddingRight: 25 }}>
         <Typography.Title level={5} style={{ margin: 0, padding: 0 }}>
-          {title}
+          {type == "events"
+            ? "Events / Announcement"
+            : title == "all"
+            ? "All"
+            : "SYSTEM"}
         </Typography.Title>
-        <Typography.Text type="secondary">{status}</Typography.Text>
+        <Typography.Text type="secondary">
+          {title.toLocaleUpperCase()}
+        </Typography.Text>
         <Typography.Paragraph style={{ marginBottom: 5 }}>
-          {description}
+          {sub_title ?? description}
         </Typography.Paragraph>
       </div>
     </div>

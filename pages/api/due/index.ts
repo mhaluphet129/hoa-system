@@ -1,11 +1,14 @@
 import dbConnect from "@/database/dbConnect";
 import Transaction from "@/database/models/transaction.schema";
-import { ExtendedResponse, Transaction as TransactionProp } from "@/types";
 import dayjs from "dayjs";
-import type { NextApiRequest, NextApiResponse } from "next";
+import mongoose from "mongoose";
 
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+
+import type { NextApiRequest, NextApiResponse } from "next";
+
+import { ExtendedResponse, Transaction as TransactionProp } from "@/types";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -22,7 +25,7 @@ async function handler(
     } else {
       // let due: any = [];
 
-      let { page, pageSize, category, status, fromDate, toDate, project } =
+      let { page, pageSize, category, status, homeownerId, project } =
         req.query;
       if (!page) page = "1";
       const _page = Number.parseInt(page!.toString()) - 1;
@@ -59,6 +62,10 @@ async function handler(
       //   });
 
       if (category) query.push({ categorySelected: { $in: [category] } });
+      if (homeownerId)
+        query.push({
+          homeownerId: new mongoose.Types.ObjectId(homeownerId as string),
+        });
       if (status) {
         if (status == "Completed") query.push({ status: "completed" });
         else if (status == "Overdue") {
