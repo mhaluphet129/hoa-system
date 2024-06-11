@@ -1,6 +1,6 @@
 const Location = () => {
   return (
-    <div className="mx-16">
+    <div className="z-50 mx-16">
       <span className="block mb-8 font-sans text-5xl text-center">
         Location
       </span>

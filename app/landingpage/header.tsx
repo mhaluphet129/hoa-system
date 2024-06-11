@@ -24,7 +24,7 @@ const Header = ({
           }`}
           onClick={() => setActive("new")}
         >
-          NEW
+          NEWS
         </li>
         <li
           className={`p-4 font-bold border-2 border-transparent cursor-pointer hover:border-b-[#FC621C4C] ${
@@ -52,7 +52,7 @@ const Header = ({
         </li>
       </ul>
       <a
-        className="px-8 py-4 font-semibold border border-black rounded text-1xl hover:bg-[#eee] hover:cursor-pointer"
+        className="px-12 py-2 font-semibold border border-slate-500 rounded text-1xl hover:bg-[#eee] hover:cursor-pointer"
         href="/user/login"
       >
         Login

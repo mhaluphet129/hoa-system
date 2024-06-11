@@ -22,7 +22,6 @@ export default function App({ Component, pageProps }: AppProps) {
           Homeowners Association Online Portal
         </title>
         <meta name="description" content="This system is a system" />
-        <script src="https://cdn.tailwindcss.com"></script>
       </Head>
       <Component {...pageProps} />
     </ConfigProvider>

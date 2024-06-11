@@ -143,7 +143,7 @@ div.outside {
 
 div#main::before {
   content: "";
-  position: absolute;
+  position: fixed;
   width: 328px;
   height: 328px;
   right: -250px;
@@ -156,7 +156,7 @@ div#main::before {
 
 div#main::after {
   content: "";
-  position: absolute;
+  position: fixed;
   width: 315px;
   height: 315px;
   left: -250px;

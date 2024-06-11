@@ -1,5 +1,6 @@
 import dbConnect from "@/database/dbConnect";
 import Announcement from "@/database/models/announcement.schema";
+import "@/database/models/user.schema";
 import { ExtendedResponse, EventWithTotal } from "@/types";
 
 import type { NextApiRequest, NextApiResponse } from "next";
