@@ -40,7 +40,11 @@ const Treasurer: React.FC = () => {
 
   useEffect(() => {
     message.info({
-      content: "Welcome Treasurer",
+      content: `Welcome ${
+        currentUser?.type?.toLocaleUpperCase() == "BOD"
+          ? "Board of Director"
+          : "Treasurer"
+      }`,
       icon: null,
     });
 

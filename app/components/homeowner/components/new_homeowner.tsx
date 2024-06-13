@@ -47,7 +47,6 @@ const NewHomeOwner = ({ open, close, user }: NewHomeownerCardProps) => {
       return (
         <Button
           type="primary"
-          loading={register.loaderHas("register")}
           onClick={async () => {
             await form1.validateFields().then(() => form1.submit());
           }}

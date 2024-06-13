@@ -28,7 +28,7 @@ import {
   RegistrationService,
 } from "@/services";
 import { useUserStore, useAuthStore } from "@/services/context";
-import { Staff, Treasurer, User, UserType } from "@/types";
+import { Bod, Staff, Treasurer, User, UserType } from "@/types";
 
 // TODO:  board of director, otherwise create each one of them
 
@@ -73,7 +73,6 @@ const Login = ({ private_key }: { private_key: string }) => {
       8
     ); /* await bcrypt.hash(passwordGenerator(), 8); */
     let stakeholder: Staff | Treasurer | null = null;
-
     switch (type) {
       case "staff": {
         username = "staff-01";
@@ -94,7 +93,11 @@ const Login = ({ private_key }: { private_key: string }) => {
       }
 
       case "bod": {
-        return;
+        username = "bod";
+        stakeholder = {
+          name: "Board of Director1",
+        };
+        break;
       }
     }
 
@@ -102,6 +105,7 @@ const Login = ({ private_key }: { private_key: string }) => {
       let _;
       if (type == "treasurer")
         _ = await treasurer.newTreasurer(stakeholder as Treasurer);
+      else if (type == "bod") _ = await register.newBod(stakeholder as Bod);
       else _ = await register.newStaff(stakeholder as Staff);
 
       let newUser: User = {

@@ -50,6 +50,11 @@ async function handler(
         break;
       }
       case "bod": {
+        query = {
+          from: "bods",
+          localField: "bodId",
+          as: "bodId",
+        };
         break;
       }
     }

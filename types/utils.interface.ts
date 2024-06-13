@@ -14,5 +14,5 @@ export interface ExtendedResponse<T> extends Response {
 export interface CheckStakeholderProps {
   staff: boolean;
   treasurer: boolean;
-  // bod: boolean,
+  bod: boolean;
 }

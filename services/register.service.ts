@@ -1,8 +1,8 @@
-import { ExtendedResponse, Homeowner, Staff } from "@/types";
+import { Bod, ExtendedResponse, Homeowner, Staff } from "@/types";
 import ApiService from "./api.service";
 import Loader from "./utils/class_loader";
 
-export class RegistrationService extends Loader {
+export class RegistrationService {
   private readonly instance = new ApiService();
 
   public async newHomeOwner(user: Homeowner) {
@@ -13,13 +13,17 @@ export class RegistrationService extends Loader {
   }
 
   public async newStaff(user: Staff): Promise<ExtendedResponse<Staff>> {
-    this.loaderPush("register");
-    const response = await this.instance.post<Staff>({
+    return await this.instance.post<Staff>({
       endpoint: "/staff/register",
       payload: user,
     });
-    this.loaderPop("register");
-    return response;
+  }
+
+  public async newBod(user: Staff): Promise<ExtendedResponse<Staff>> {
+    return await this.instance.post<Bod>({
+      endpoint: "/bod/register",
+      payload: user,
+    });
   }
 
   public async updateHomeowner(_id: string, payload: any) {

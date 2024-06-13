@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import user_homeownerSchema from "./user_homeowner.schema";
 import user_staffSchema from "./user_staff.schema";
 import user_treasurerSchema from "./user_treasurer.schema";
+import user_bodSchema from "./user_bod.schema";
 
 const UserSchema = new mongoose.Schema(
   {
@@ -29,6 +30,10 @@ const UserSchema = new mongoose.Schema(
     treasurerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: user_treasurerSchema,
+    },
+    bodId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: user_bodSchema,
     },
     status: {
       type: String,

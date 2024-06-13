@@ -29,7 +29,12 @@ export async function middleware(req: NextRequest) {
   if (protectedRoute.includes(pathname)) {
     if (currentUser)
       return NextResponse.rewrite(
-        new URL(`/user/home-${currentUser.type}`, req.url)
+        new URL(
+          `/user/home-${
+            currentUser.type == "bod" ? "treasurer" : currentUser.type
+          }`,
+          req.url
+        )
       );
     else return NextResponse.redirect(new URL("/user/login", req.url));
   }

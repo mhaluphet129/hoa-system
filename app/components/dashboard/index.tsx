@@ -297,7 +297,7 @@ const Dashboard = () => {
               />
             </Card>
           </Col>
-          {["treasurer", "staff", "homeowner"].includes(role!) && (
+          {["treasurer", "staff", "homeowner", "bod"].includes(role!) && (
             <Col span={8}>
               <Card
                 styles={{
@@ -363,7 +363,7 @@ const Dashboard = () => {
               </Col>
             </>
           )}
-          {["staff", "treasurer"].includes(role!) && (
+          {["staff", "treasurer", "bod"].includes(role!) && (
             <Col span={8}>
               <Card
                 styles={{
@@ -400,7 +400,7 @@ const Dashboard = () => {
               </Card>
             </Col>
           )}
-          {["treasurer"].includes(role!) && (
+          {["treasurer", "bod"].includes(role!) && (
             <Col span={8}>
               <Card
                 styles={{

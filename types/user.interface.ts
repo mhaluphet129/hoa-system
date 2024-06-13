@@ -10,6 +10,7 @@ export interface User {
   homeownerId?: Homeowner;
   staffId?: Staff;
   treasurerId?: Treasurer;
+  bodId?: Bod;
   status?: UserStatus;
   createdAt?: Date;
 }
@@ -52,6 +53,11 @@ export interface Staff {
 export interface Treasurer {
   _id?: string;
   account_balance: number;
+  name: string;
+}
+
+export interface Bod {
+  _id?: string;
   name: string;
 }
 

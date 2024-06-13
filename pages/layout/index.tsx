@@ -63,14 +63,14 @@ const Header = () => {
         return `${user?.homeownerId?.name} ${user?.homeownerId?.lastname}`;
       }
       case "staff": {
-        return user?.staffId?.name ?? "";
+        return user?.staffId?.name ?? "N/A";
       }
       case "treasurer": {
         return user?.treasurerId?.name ?? "N/A";
       }
 
       case "bod": {
-        return "BOD no name";
+        return user?.bodId?.name ?? "N/A";
       }
     }
 

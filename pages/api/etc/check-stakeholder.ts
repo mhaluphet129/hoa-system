@@ -16,7 +16,7 @@ async function handler(
     try {
       let staffCount = await User.countDocuments({ type: "staff" });
       let treasurerCount = await User.countDocuments({ type: "treasurer" });
-      // let bodCount = await User.countDocuments({ type: "bod" });
+      let bodCount = await User.countDocuments({ type: "bod" });
 
       res.json({
         code: 200,
@@ -24,7 +24,7 @@ async function handler(
         data: {
           staff: staffCount > 0,
           treasurer: treasurerCount > 0,
-          // bod: bodCount > 0,
+          bod: bodCount > 0,
         },
       });
     } catch {
